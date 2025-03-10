@@ -20,7 +20,9 @@ model User{
   realname String
   email String @unique
   phone String
-  posts Admin[]
+  adminPosts Admin[]
+  coursePosts Course[]
+  studyingPosts Studying[]
 }
 model Admin{
   id Int @id 
@@ -28,5 +30,29 @@ model Admin{
 }
 model Course{
   id Int @id @default(autoincrement())
-  
+  title String
+  maxLifes Int
+  description String
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  studyingPosts Studying[]
+  levelPosts Level[]
+}
+model Level{
+  id Int @id @default(autoincrement())
+  type String
+  content Json
+  recoveryLifes Int
+  courseId Int
+  course Course @relation(fields: [courseId], references: [id])
+}
+model Studying{
+  id Int @id @default(autoincrement())
+  xp Int
+  lifes Int
+  levels Int
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+  courseId Int
+  course Course @relation(fields: [courseId], references: [id])
 }

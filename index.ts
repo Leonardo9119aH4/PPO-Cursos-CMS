@@ -6,6 +6,7 @@ async function main(){
     app.listen(3000, ()=>{
 
     })
+    
 }
 main().catch((e) => {
     throw e
