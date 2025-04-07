@@ -1,0 +1,17 @@
+footer {
+    background-color: gray;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    & section{
+        display: grid;
+        place-items: center;
+        & a{
+            color: white;
+            text-decoration: none;
+        }
+        & a:hover{
+            color: blue;
+            cursor: pointer;
+        }
+    }
+}

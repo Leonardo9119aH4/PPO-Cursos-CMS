@@ -1,0 +1,34 @@
+nav{
+    width: 98.35vw;
+    height: 10vh;
+    background-color: lightgray;
+    display: flex;
+    padding: 1rem;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    &>img{
+        width: 5rem;
+    }
+    & button{
+        margin-bottom: 0;
+    }
+    & #navLinks{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        & #navLogIn, #navSignUp{
+            font-size: 2rem;
+            color: black;
+            text-decoration: none;
+            &:hover{
+                color: blue;
+                cursor: pointer;
+            }
+        }
+        & #navLogIn{
+            margin-right: 1rem;
+        }
+    }
+}

@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import api from '../../api';
-import Nav from '../../components/nav';
+import Nav from '../../components/nav/nav';
 import './style.scss';
+import Footer from '../../components/footer/footer';
 
 function Home() {
     // Estado para armazenar o texto a ser exibido na div
@@ -23,6 +24,7 @@ function Home() {
                 <div>{hookTeste}</div>  
                 <button onClick={teste}>Executar Teste</button>
             </main>
+            <Footer />
         </>
     );
 }
