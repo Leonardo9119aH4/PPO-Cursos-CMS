@@ -1,6 +1,10 @@
+@use '../../global.scss' as mixins;
+:root{
+    --navHeight: 12.5vh;
+}
 nav{
-    width: 98.35vw;
-    height: 10vh;
+    width: 100vw;
+    height: var(--navHeight);
     background-color: lightgray;
     display: flex;
     padding: 1rem;
@@ -8,11 +12,10 @@ nav{
     position: fixed;
     top: 0;
     z-index: 100;
+    box-sizing: border-box;
+    transition: 1s;
     &>img{
         width: 5rem;
-    }
-    & button{
-        margin-bottom: 0;
     }
     & #navLinks{
         display: flex;
@@ -31,4 +34,15 @@ nav{
             margin-right: 1rem;
         }
     }
+    &.hidden{
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+#navButton{
+    position: fixed;
+    z-index: 101;
+    top: var(--navHeight);
+    justify-self: center;
+    transition: 1s;
 }
