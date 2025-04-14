@@ -1,8 +1,18 @@
 import "./style.scss";
+import Nav from "../../components/nav/nav";
+import Footer from "../../components/footer/footer";
 
 function SignIn(){
     return (
-        <h1>SIGN IN</h1>
+        <>
+            <Nav />
+            <menu>
+                <form>
+                    
+                </form>
+            </menu>
+            <Footer />
+        </>
     )
 }
 

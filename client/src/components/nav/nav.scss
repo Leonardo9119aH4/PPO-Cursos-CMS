@@ -45,4 +45,8 @@ nav{
     top: var(--navHeight);
     justify-self: center;
     transition: 1s;
+    &>button{
+        @include mixins.button-black;
+        margin-left: calc(50vw - 1rem);
+    }
 }

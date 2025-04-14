@@ -33,6 +33,8 @@ model Course{
   title String
   maxLifes Int
   description String
+  timeRecoveryLife DateTime
+  practiceRecoveryLife Int
   userId Int
   user User @relation(fields: [userId], references: [id])
   studyingPosts Studying[]

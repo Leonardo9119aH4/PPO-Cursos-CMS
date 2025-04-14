@@ -1,7 +1,7 @@
+import './style.scss';
 import { useRef, useState } from 'react';
 import api from '../../api';
 import Nav from '../../components/nav/nav';
-import './style.scss';
 import Footer from '../../components/footer/footer';
 
 function Home() {

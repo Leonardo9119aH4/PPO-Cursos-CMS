@@ -73,6 +73,7 @@ export async function users(app: Application, prisma: PrismaClient){
             res.status(201).json(user);
         }
         catch(er){
+            console.log(er)
             res.status(500).json(er);
         }
     })

@@ -8,6 +8,7 @@ const prisma = new PrismaClient();
 async function main(){
     app.listen(3000, ()=>{});
     app.use(cors());
+    app.use(express.json())
     users(app, prisma);
 
 }
