@@ -10,11 +10,12 @@ function SignUp(){
             const formData = new FormData(ev.target as HTMLFormElement);
             const data = Object.fromEntries(formData.entries());
             const status = await api.post("/signup", data);
-            console.log(status)
+            console.log(status.data)
         }
-        catch{
-            
+        catch(er: any){
+            console.log(er.response.data);
         }
+
     }
     return (
         <>
