@@ -10,5 +10,7 @@ main{
         background-color: lightgray;
         padding: 2rem;
         border-radius: 2rem;
+        display: flex;
+        flex-direction: column;
     }
 }

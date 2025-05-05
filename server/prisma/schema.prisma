@@ -23,6 +23,7 @@ model User{
   adminPosts Admin[]
   coursePosts Course[]
   studyingPosts Studying[]
+  keysPosts AuthKey[]
 }
 model Admin{
   id Int @id 
@@ -57,4 +58,10 @@ model Studying{
   user User @relation(fields: [userId], references: [id])
   courseId Int
   course Course @relation(fields: [courseId], references: [id])
+}
+model AuthKey {
+  id Int @id @default(autoincrement())
+  key String @unique
+  userId Int
+  user User @relation(fields: [userId], references: [id])
 }

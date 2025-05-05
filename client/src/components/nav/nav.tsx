@@ -1,7 +1,8 @@
 import './nav.scss';
 import logo from '../../assets/react.svg'
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import api from '../../api';
 
 function Nav(){
     const [isHideNav, setIsHideNav] = useState(false);
@@ -10,13 +11,42 @@ function Nav(){
         const navHeight = isHideNav ? '12.5vh' : '0';
         document.documentElement.style.setProperty('--navHeight', navHeight);
     }
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(()=>{
+        const updateNav = async ()=>{
+            try{
+                const accountInfo = await api.get("/getinfo");
+                console.log(accountInfo.status)
+                if(accountInfo.status == 200){
+                    setIsLoggedIn(true);
+                }
+                else{
+                    setIsLoggedIn(false);
+                }
+            }
+            catch(er: any){
+                setIsLoggedIn(false);
+            }  
+        }
+        updateNav();
+    })
+
     return (
         <>
         <nav className={isHideNav ? 'hidden' : ''}>
             <img src={logo} alt="Logo" />
             <div id="navLinks">
-                <Link id="navLogIn" to='/signin'>Entrar</Link>
-                <Link id="navSignUp" to='/signup'>Cadastrar</Link>
+            {isLoggedIn ? (
+                <>
+                    <Link to="/profile">Perfil</Link>
+                    <Link to="/courses">Cursos</Link>
+                </>
+                ) : (
+                <>
+                    <Link id="navLogIn" to='/signin'>Entrar</Link>
+                    <Link id="navSignUp" to='/signup'>Cadastrar</Link>
+                </>
+                )}
             </div>
         </nav>
         <div id="navButton">
