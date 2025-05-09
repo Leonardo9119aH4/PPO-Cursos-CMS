@@ -1,9 +1,12 @@
 @use "../../global.scss";
 $color: red;
-main{
+#home{
+    main{
     display: flex;
     flex-direction: column;
     & h1{
         color: $color;
     }
 }
+}
+

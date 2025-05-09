@@ -14,7 +14,7 @@ function Profile(){
         updateProfile();
     })
     return (
-        <>
+        <div id="profile">
             <Nav />
             <menu>
 
@@ -36,7 +36,7 @@ function Profile(){
 
             </main>
             <Footer />
-        </>
+        </div>
     );
 }
 

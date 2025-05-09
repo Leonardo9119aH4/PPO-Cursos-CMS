@@ -23,7 +23,7 @@ function SignIn(){
         }
     }
     return (
-        <>
+        <div id="signin">
             <Nav />
             <main>
                 <form onSubmit={sendSignUp}>
@@ -42,7 +42,7 @@ function SignIn(){
                 </form>
             </main>
             <Footer />
-        </>
+        </div>
     )
 }
 

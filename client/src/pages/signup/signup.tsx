@@ -21,7 +21,7 @@ function SignUp(){
 
     }
     return (
-        <>
+        <div id="signup">
             <Nav />
             <main>
                 <form onSubmit={sendSignUp}>
@@ -52,7 +52,7 @@ function SignUp(){
                 </form>
             </main>
             <Footer />
-        </>
+        </div>
     )
 }
 

@@ -15,7 +15,7 @@ function Home() {
     };
 
     return (
-        <>
+        <div id="home">
             <Nav />
             <main>
                 <h1>HOME</h1>
@@ -25,7 +25,7 @@ function Home() {
                 <button onClick={teste}>Executar Teste</button>
             </main>
             <Footer />
-        </>
+        </div>
     );
 }
 

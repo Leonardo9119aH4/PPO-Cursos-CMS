@@ -1,5 +1,6 @@
 @use "../../global.scss";
-main{
+#signup{
+    main{
     margin-top: 2rem;
     display: flex;
     flex-direction: column;
@@ -12,5 +13,6 @@ main{
         border-radius: 2rem;
         display: flex;
         flex-direction: column;
+        }
     }
 }
