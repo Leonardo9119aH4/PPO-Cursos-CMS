@@ -170,10 +170,10 @@ export async function users(app: Application, prisma: PrismaClient){
                                 },
                             });
                             res.cookie('authKey', authKey, {
-                                path: '/authKey',
+                                path: '/',
                                 secure: false,
                                 httpOnly: true,
-                                sameSite: "strict",
+                                sameSite: "lax",
                             });
                             res.status(200).json("Logado com sucesso!");
                             return;
@@ -194,7 +194,6 @@ export async function users(app: Application, prisma: PrismaClient){
     });
 
     app.get("/getinfo", async (req: Request, res: Response)=>{
-        console.log(req.cookies)
         if(req.cookies.authKey == null){
             res.status(204).json("Sem conta logada");
             return;
@@ -202,10 +201,10 @@ export async function users(app: Application, prisma: PrismaClient){
         const user = getLoggedUser(prisma, req.cookies.authKey);
         if(user == null){
             res.clearCookie('authKey', {
-                path: "/authKey", 
+                path: "/", 
                 secure: false,    
                 httpOnly: true,   
-                sameSite: "strict" 
+                sameSite: "lax"
             });
             res.status(404).json("Sem usuário para chave fornecida");
             return;
@@ -216,16 +215,16 @@ export async function users(app: Application, prisma: PrismaClient){
     app.delete("/logout", async (req: Request, res: Response) => {
         const userKey = req.cookies.authKey;
         res.clearCookie("authKey", {
-            path: "/authKey", 
+            path: "/", 
             secure: false,    
             httpOnly: true,   
-            sameSite: "strict" 
+            sameSite: "lax" 
         });
         await prisma.authKey.delete({
             where: {
                 key: userKey
             }
-        })
+        });
         res.status(200).json("Logout realizado com sucesso!");
     });
 }

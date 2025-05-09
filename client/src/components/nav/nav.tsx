@@ -38,13 +38,13 @@ function Nav(){
             <div id="navLinks">
             {isLoggedIn ? (
                 <>
-                    <Link to="/profile">Perfil</Link>
-                    <Link to="/courses">Cursos</Link>
+                    <Link className="navLink" to="/profile">Perfil</Link>
+                    <Link className="navLink" to="/courses">Cursos</Link>
                 </>
                 ) : (
                 <>
-                    <Link id="navLogIn" to='/signin'>Entrar</Link>
-                    <Link id="navSignUp" to='/signup'>Cadastrar</Link>
+                    <Link className="navLink" to='/signin'>Entrar</Link>
+                    <Link className="navLink" to='/signup'>Cadastrar</Link>
                 </>
                 )}
             </div>

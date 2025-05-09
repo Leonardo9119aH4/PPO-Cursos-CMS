@@ -1,4 +1,4 @@
-import './style.scss';
+import './home.scss';
 import { useRef, useState } from 'react';
 import api from '../../api';
 import Nav from '../../components/nav/nav';

@@ -21,17 +21,15 @@ nav{
         display: flex;
         align-items: center;
         justify-content: center;
-        & #navLogIn, #navSignUp{
+        & .navLink{
             font-size: 2rem;
             color: black;
             text-decoration: none;
+            margin-right: 1rem;
             &:hover{
                 color: blue;
                 cursor: pointer;
             }
-        }
-        & #navLogIn{
-            margin-right: 1rem;
         }
     }
     &.hidden{

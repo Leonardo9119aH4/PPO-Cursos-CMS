@@ -1,4 +1,4 @@
-import "./style.scss";
+import "./signin.scss";
 import { useRef, useState } from 'react';
 import Nav from "../../components/nav/nav";
 import Footer from "../../components/footer/footer";
