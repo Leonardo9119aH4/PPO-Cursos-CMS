@@ -1,4 +1,4 @@
-html, body, #root, #root>div{
+html, body, #root{
     padding: 0;
     margin: 0;
     box-sizing: border-box;
@@ -6,9 +6,9 @@ html, body, #root, #root>div{
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    & main{
-        flex: 1;
-    }
+}
+#root>div{
+    flex: 1;
 }
 @mixin button-black{
     border: none;

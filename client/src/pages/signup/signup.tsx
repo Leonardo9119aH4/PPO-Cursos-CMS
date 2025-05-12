@@ -21,38 +21,40 @@ function SignUp(){
 
     }
     return (
-        <div id="signup">
+        <>
             <Nav />
-            <main>
-                <form onSubmit={sendSignUp}>
-                    <label>
-                        <p>Nome de usuário:</p>
-                        <input type="text" name="username" required />
-                    </label>
-                    <label>
-                        <p>Email:</p>
-                        <input type="email" name="email" required />
-                    </label>
-                    <label>
-                        <p>Nome real:</p>
-                        <input type="text" name="realname" />
-                    </label>
-                    <label>
-                        <p>Telefone:</p>
-                        <input type="tel" name="phone" />
-                    </label>
-                    <label>
-                        <p>Senha:</p>
-                        <input type="password" name="password" required />
-                    </label>
-                    <button type="submit">CADASTRAR</button>
-                    <div id="status">
-                        {accountStatus}
-                    </div>
-                </form>
-            </main>
+            <div id="signup">
+                <main>
+                    <form onSubmit={sendSignUp}>
+                        <label>
+                            <p>Nome de usuário:</p>
+                            <input type="text" name="username" required />
+                        </label>
+                        <label>
+                            <p>Email:</p>
+                            <input type="email" name="email" required />
+                        </label>
+                        <label>
+                            <p>Nome real:</p>
+                            <input type="text" name="realname" />
+                        </label>
+                        <label>
+                            <p>Telefone:</p>
+                            <input type="tel" name="phone" />
+                        </label>
+                        <label>
+                            <p>Senha:</p>
+                            <input type="password" name="password" required />
+                        </label>
+                        <button type="submit">CADASTRAR</button>
+                        <div id="status">
+                            {accountStatus}
+                        </div>
+                    </form>
+                </main>
+            </div>
             <Footer />
-        </div>
+        </>
     )
 }
 

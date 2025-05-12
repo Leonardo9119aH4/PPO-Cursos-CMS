@@ -1,4 +1,4 @@
-@use '../../global.scss' as mixins;
+@use '../../global.scss' as mixins; // Não remover, precisa para o mixin de botão
 :root{
     --navHeight: 12.5vh;
 }
@@ -14,7 +14,8 @@ nav{
     z-index: 100;
     box-sizing: border-box;
     transition: 1s;
-    &>img{
+    box-shadow: 1px 1px 5px black;
+    & #logo>img{
         width: 5rem;
     }
     & #navLinks{
@@ -43,8 +44,10 @@ nav{
     top: var(--navHeight);
     justify-self: center;
     transition: 1s;
+    left: calc(50vw - 1rem);
+    box-shadow: 1px 1px 5px black;
     &>button{
         @include mixins.button-black;
-        margin-left: calc(50vw - 1rem);
+        margin: 0;
     }
 }

@@ -15,17 +15,19 @@ function Home() {
     };
 
     return (
-        <div id="home">
+        <>
             <Nav />
-            <main>
-                <h1>HOME</h1>
-                <h2>TESTE</h2>
-                {/* O conteúdo da div é agora controlado pelo estado hookTeste */}
-                <div>{hookTeste}</div>  
-                <button onClick={teste}>Executar Teste</button>
-            </main>
+            <div id="home">
+                <main>
+                    <h1>HOME</h1>
+                    <h2>TESTE</h2>
+                    {/* O conteúdo da div é agora controlado pelo estado hookTeste */}
+                    <div>{hookTeste}</div>  
+                    <button onClick={teste}>Executar Teste</button>
+                </main>
+            </div>
             <Footer />
-        </div>
+        </>
     );
 }
 

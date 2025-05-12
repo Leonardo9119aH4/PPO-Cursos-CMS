@@ -34,7 +34,9 @@ function Nav(){
     return (
         <>
         <nav className={isHideNav ? 'hidden' : ''}>
-            <img src={logo} alt="Logo" />
+            <Link to="/" id="logo">
+                <img src={logo} alt="Logo" />
+            </Link>
             <div id="navLinks">
             {isLoggedIn ? (
                 <>

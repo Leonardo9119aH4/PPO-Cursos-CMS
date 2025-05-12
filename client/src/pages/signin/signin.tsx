@@ -23,26 +23,28 @@ function SignIn(){
         }
     }
     return (
-        <div id="signin">
+        <>
             <Nav />
-            <main>
-                <form onSubmit={sendSignUp}>
-                    <label>
-                        <p>Nome de usuário ou email:</p>
-                        <input type="text" name="login" required />
-                    </label>
-                    <label>
-                        <p>Senha:</p>
-                        <input type="password" name="password" required />
-                    </label>
-                    <button type="submit">ENTRAR</button>
-                    <div id="status">
-                        {accountStatus}
-                    </div>
-                </form>
-            </main>
+            <div id="signin">
+                <main>
+                    <form onSubmit={sendSignUp}>
+                        <label>
+                            <p>Nome de usuário ou email:</p>
+                            <input type="text" name="login" required />
+                        </label>
+                        <label>
+                            <p>Senha:</p>
+                            <input type="password" name="password" required />
+                        </label>
+                        <button type="submit">ENTRAR</button>
+                        <div id="status">
+                            {accountStatus}
+                        </div>
+                    </form>
+                </main>
+            </div>
             <Footer />
-        </div>
+        </>
     )
 }
 

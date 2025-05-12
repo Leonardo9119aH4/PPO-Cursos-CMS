@@ -1,3 +1,59 @@
 #profile{
-    
+    display: flex;
+    flex-direction: row !important;
+    height: 100vh;
+    margin: 0;
+    & menu {
+        float: right;
+        width: 20%;
+        height: 100vh;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: lightgray;
+        margin: 0;
+        font-size: 1.5rem;
+        & a{
+            color: black;
+            text-decoration: none;
+            padding: 1rem;
+            background-color: gray;
+            width: 100%;
+            margin-top: 0.25rem;
+            box-sizing: border-box;
+            text-align: center;
+            &:hover{
+                color: blue;
+                cursor: pointer;
+            }
+        }
+    }
+    & main {
+        width: 80%;
+        height: 100vh;
+        padding: 0;
+        box-sizing: border-box;
+        & section{
+            display: flex;
+            flex-direction: column;
+            font-size: 1.5rem;
+            border: 1px solid gray;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0.5rem;
+            & #accountInfo img{ 
+                height: 1.5rem;
+            }
+            &#welcome{ // Não é div filho
+                align-items: center;
+                & #userphoto{
+                    height: 10rem;
+                    width: 10rem;
+                    border: 1px solid black;
+                    border-radius: 50%;
+                }
+            }
+        }
+    }
 }

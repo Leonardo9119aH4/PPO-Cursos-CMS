@@ -198,7 +198,7 @@ export async function users(app: Application, prisma: PrismaClient){
             res.status(204).json("Sem conta logada");
             return;
         }
-        const user = getLoggedUser(prisma, req.cookies.authKey);
+        const user = await getLoggedUser(prisma, req.cookies.authKey);
         if(user == null){
             res.clearCookie('authKey', {
                 path: "/", 
