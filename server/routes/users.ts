@@ -11,12 +11,35 @@ type User = {
     phone: string | null
 }
 
-function verifyDataConflict(users: User[], username: string, email: string){
+async function getUsers(prisma: PrismaClient){
+    const users: User[] = (await prisma.user.findMany({
+        select: {
+            id: true,
+            username: true,
+            realname: true,
+            email: true,
+            phone: true
+        }
+    })).map(user => {
+        return { //esse return é do map, e não para interromper a função
+            id: user.id, 
+            username: user.username,
+            password: null,
+            realname: user.realname, 
+            email: user.email,
+            phone: user.phone
+        }
+    })
+    return users;
+}
+
+function verifyDataConflict(users: User[], username: string | null, email: string | null, ignoreUser?: User){
     for(let i = 0; i < users.length; i++){
-        if(users[i].username === username){
+        if(ignoreUser != undefined && users[i].id === ignoreUser.id) continue; //pula o usuário atual
+        if(username != null && users[i].username === username){
             return {status: 409, message: "Nome de usuário já existente"};
         }
-        if(users[i].email === email){
+        if(email != null && users[i].email === email){
             return {status: 409, message: "Email já existente"};
         }
     }
@@ -24,7 +47,6 @@ function verifyDataConflict(users: User[], username: string, email: string){
 }
 
 function verifyPasswordSecurity(password: string){
-    console.log(password);
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[a-zA-Z\d\W_]{8,}$/;
     if(!regex.test(password)){
         return {status: 400, message: "A senha precisa ter pelo menos 8 caracteres e ao menos 1 número, 1 maiúscula, 1 minúscula e 1 caractere especial."};
@@ -48,24 +70,7 @@ async function getLoggedUser(prisma: PrismaClient, userKey: string){
             userId: true,
         }
     });
-    const users: User[] = (await prisma.user.findMany({
-        select: {
-            id: true,
-            username: true,
-            realname: true,
-            email: true,
-            phone: true
-        }
-    })).map(user => {
-        return { //esse return é do map, e não para interromper a função
-            id: user.id, 
-            username: user.username,
-            password: null,
-            realname: user.realname, 
-            email: user.email,
-            phone: user.phone
-        }
-    })
+    const users = await getUsers(prisma);
     for(const authKey of authKeys){
         if(authKey.key == userKey){
             for(const user of users){
@@ -114,7 +119,7 @@ export async function users(app: Application, prisma: PrismaClient){
                 return; // interrompe a execução do código ao devolver a resposta ao servidor
             }
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
-            const user = await prisma.user.create({
+            await prisma.user.create({
                 data: {
                     username: req.body.username,
                     password: hashedPassword,
@@ -214,6 +219,10 @@ export async function users(app: Application, prisma: PrismaClient){
 
     app.delete("/logout", async (req: Request, res: Response) => {
         const userKey = req.cookies.authKey;
+        if (!userKey) {
+            res.status(400).json("Chave de autenticação não encontrada.");
+            return;
+        }
         res.clearCookie("authKey", {
             path: "/", 
             secure: false,    
@@ -227,6 +236,48 @@ export async function users(app: Application, prisma: PrismaClient){
         });
         res.status(200).json("Logout realizado com sucesso!");
     });
+
+    app.put("/update", async (req: Request, res: Response) => {
+        try{
+            if(req.cookies.authKey == null){
+                res.status(204).json("Sem conta logada");
+                return;
+            }
+            const user = await getLoggedUser(prisma, req.cookies.authKey);
+            if(user == null){
+                res.clearCookie('authKey', {
+                    path: "/", 
+                    secure: false,    
+                    httpOnly: true,   
+                    sameSite: "lax"
+                });
+                res.status(404).json("Sem usuário para chave fornecida");
+                return;
+            }
+            const users = await getUsers(prisma);
+            const dataConflict = verifyDataConflict(users, req.body.username, req.body.email, user);
+            if(dataConflict.status !== 200){ //evita conflitos  
+                res.status(dataConflict.status).json(dataConflict.message);
+                return;
+            }
+            const data: any = {}; // evitar que campos nulos altererem o valor
+            if(req.body.username !== null && req.body.username !== undefined && req.body.username.trim() !== "") data.username = req.body.username;
+            if(req.body.realname !== null && req.body.realname !== undefined && req.body.realname.trim() !== "") data.realname = req.body.realname;
+            if (req.body.email !== null && req.body.email !== undefined && req.body.email.trim() !== "") data.email = req.body.email;
+            if(req.body.phone !== null && req.body.phone !== undefined && req.body.phone.trim() !== "") data.phone = req.body.phone;
+            await prisma.user.update({
+                where: {id: user.id},
+                data
+            });
+            res.status(200).json(user);
+        }
+        catch(er){
+            res.status(500).json(er);
+        }
+
+    });
+
+    app.post("/updatePassword", async (req: Request, res: Response)=>{
+
+    })
 }
-
-

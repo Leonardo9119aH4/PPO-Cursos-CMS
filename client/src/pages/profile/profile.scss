@@ -14,7 +14,9 @@
         background-color: lightgray;
         margin: 0;
         font-size: 1.5rem;
-        & a{
+        & a, & button{
+            border: none;
+            font-size: 1.5rem;
             color: black;
             text-decoration: none;
             padding: 1rem;
@@ -56,4 +58,21 @@
             }
         }
     }
+    & .logoutButton{
+    border: none;
+    font-size: 1.5rem;
+    color: red;
+    text-decoration: none;
+    padding: 1rem;
+    background-color: gray;
+    width: 100%;
+    margin-top: 0.25rem;
+    box-sizing: border-box;
+    text-align: center;
+    &:hover{
+        cursor: pointer;
+        color: black;
+        background-color: rgb(107, 24, 24);
+    }
+}
 }
