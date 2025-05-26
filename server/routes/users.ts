@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Application, Request, Response } from "express";
 import bcrypt from "bcrypt";
+import multer from "multer";
+import fs from "fs/promises";
 
 type User = {
     id: number,
@@ -85,7 +87,7 @@ async function getLoggedUser(prisma: PrismaClient, userKey: string){
     return null;
 }
 
-export async function users(app: Application, prisma: PrismaClient){
+export async function users(app: Application, prisma: PrismaClient, storage: multer.StorageEngine){
     app.post("/signup", async (req: Request, res: Response)=>{
         try{
             if(req.body.username == null || req.body.email == null || req.body.password == null){
@@ -119,7 +121,7 @@ export async function users(app: Application, prisma: PrismaClient){
                 return; // interrompe a execução do código ao devolver a resposta ao servidor
             }
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
-            await prisma.user.create({
+            const user = await prisma.user.create({
                 data: {
                     username: req.body.username,
                     password: hashedPassword,
@@ -128,6 +130,7 @@ export async function users(app: Application, prisma: PrismaClient){
                     phone: req.body.phone
                 }
             });
+            await fs.mkdir(`./uploads/users/${user.id}`);
             res.status(201).json("Conta criada com sucesso"); // não há necessidade de return porque não há codigo a ser executado depois disso
         }
         catch(er){

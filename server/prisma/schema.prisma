@@ -36,6 +36,7 @@ model Course{
   description String
   timeRecoveryLife DateTime
   practiceRecoveryLife Int
+  thubnail String
   userId Int
   user User @relation(fields: [userId], references: [id])
   studyingPosts Studying[]

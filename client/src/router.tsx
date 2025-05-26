@@ -4,6 +4,7 @@ import Home from "./pages/home/home";
 import SignIn from "./pages/signin/signin";
 import SignUp from "./pages/signup/signup";
 import Profile from "./pages/profile/profile";
+import NewCourse from './pages/newCourse/newCourse'
 
 function MainRoutes(){
     return (
@@ -13,6 +14,7 @@ function MainRoutes(){
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/newCourse" element={<NewCourse />} />
         </Routes>
     )
 }

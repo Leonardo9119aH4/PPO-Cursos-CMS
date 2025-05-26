@@ -18,8 +18,8 @@ function SignUp(){
         catch(er: any){
             setAccountStatus(String(er.response.data));
         }
-
     }
+    
     return (
         <>
             <Nav />
