@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import multer from "multer";
 import fs from "fs/promises";
 
-type User = {
+type User = { // Define o tipo User com os campos necessários
     id: number,
     username: string | null,
     password: string | null,
@@ -13,7 +13,7 @@ type User = {
     phone: string | null
 }
 
-async function getUsers(prisma: PrismaClient){
+async function getUsers(prisma: PrismaClient){ // Busca todos os usuários do banco de dados e retorna um array de objetos User
     const users: User[] = (await prisma.user.findMany({
         select: {
             id: true,
@@ -35,7 +35,7 @@ async function getUsers(prisma: PrismaClient){
     return users;
 }
 
-function verifyDataConflict(users: User[], username: string | null, email: string | null, ignoreUser?: User){
+function verifyDataConflict(users: User[], username: string | null, email: string | null, ignoreUser?: User){ // Verifica se há conflito de dados com os usuários existentes
     for(let i = 0; i < users.length; i++){
         if(ignoreUser != undefined && users[i].id === ignoreUser.id) continue; //pula o usuário atual
         if(username != null && users[i].username === username){
@@ -48,7 +48,7 @@ function verifyDataConflict(users: User[], username: string | null, email: strin
     return {status: 200};
 }
 
-function verifyPasswordSecurity(password: string){
+function verifyPasswordSecurity(password: string){ // Verifica se a senha atende aos requisitos de segurança
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[a-zA-Z\d\W_]{8,}$/;
     if(!regex.test(password)){
         return {status: 400, message: "A senha precisa ter pelo menos 8 caracteres e ao menos 1 número, 1 maiúscula, 1 minúscula e 1 caractere especial."};
@@ -65,7 +65,7 @@ function randomString(count: number): string{ //gera a chave de autenticação a
     return result;
 }
 
-async function getLoggedUser(prisma: PrismaClient, userKey: string){
+async function getLoggedUser(prisma: PrismaClient, userKey: string){ // Busca o usuário logado com base na chave de autenticação
     const authKeys = await prisma.authKey.findMany({
         select: {
             key: true,
@@ -87,8 +87,8 @@ async function getLoggedUser(prisma: PrismaClient, userKey: string){
     return null;
 }
 
-export async function users(app: Application, prisma: PrismaClient, storage: multer.StorageEngine){
-    app.post("/signup", async (req: Request, res: Response)=>{
+export async function users(app: Application, prisma: PrismaClient, storage: string){ // Define as rotas relacionadas aos usuários
+    app.post("/signup", async (req: Request, res: Response)=>{ // Rota para criar uma nova conta de usuário
         try{
             if(req.body.username == null || req.body.email == null || req.body.password == null){
                 res.status(400).json("Informações incompletas");
@@ -130,7 +130,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: mul
                     phone: req.body.phone
                 }
             });
-            await fs.mkdir(`./uploads/users/${user.id}`);
+            await fs.mkdir(`${storage}/users/${user.id}`);
             res.status(201).json("Conta criada com sucesso"); // não há necessidade de return porque não há codigo a ser executado depois disso
         }
         catch(er){
@@ -139,7 +139,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: mul
         }
     });
 
-    app.post("/signin", async (req: Request, res: Response)=>{
+    app.post("/signin", async (req: Request, res: Response)=>{ // Rota para fazer login de um usuário existente
         try{
             if(req.body.login == null || req.body.password == null){
                 res.status(400).json("Informações incompletas");
@@ -201,7 +201,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: mul
         }
     });
 
-    app.get("/getinfo", async (req: Request, res: Response)=>{
+    app.get("/getinfo", async (req: Request, res: Response)=>{ // Rota para obter informações do usuário logado
         if(req.cookies.authKey == null){
             res.status(204).json("Sem conta logada");
             return;
@@ -220,7 +220,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: mul
         res.status(200).json(user);
     });
 
-    app.delete("/logout", async (req: Request, res: Response) => {
+    app.delete("/logout", async (req: Request, res: Response) => { // Rota para fazer logout do usuário
         const userKey = req.cookies.authKey;
         if (!userKey) {
             res.status(400).json("Chave de autenticação não encontrada.");
@@ -240,7 +240,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: mul
         res.status(200).json("Logout realizado com sucesso!");
     });
 
-    app.put("/update", async (req: Request, res: Response) => {
+    app.put("/update", async (req: Request, res: Response) => { // Rota para atualizar as informações do usuário logado
         try{
             if(req.cookies.authKey == null){
                 res.status(204).json("Sem conta logada");
@@ -280,7 +280,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: mul
 
     });
 
-    app.post("/updatePassword", async (req: Request, res: Response)=>{
+    app.post("/updatePassword", async (req: Request, res: Response)=>{ 
 
     })
 }
