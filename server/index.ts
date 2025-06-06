@@ -10,7 +10,7 @@ import dotenv from "dotenv";
 const app = express();
 const prisma = new PrismaClient();
 dotenv.config();
-const storage = process.env.STORAGE || "storage";
+const storage = process.env.UPLOADS_DIR || "./uploads";
 const corsOptions = {
     origin: process.env.CLIENT_URL, 
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

@@ -34,6 +34,7 @@ async function getUsers(prisma: PrismaClient){ // Busca todos os usuários do ba
     })
     return users;
 }
+export default getUsers;
 
 function verifyDataConflict(users: User[], username: string | null, email: string | null, ignoreUser?: User){ // Verifica se há conflito de dados com os usuários existentes
     for(let i = 0; i < users.length; i++){
@@ -130,7 +131,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
                     phone: req.body.phone
                 }
             });
-            await fs.mkdir(`${storage}/users/${user.id}`);
+            await fs.mkdir(`${storage}/users/${user.id}`, {recursive: true});
             res.status(201).json("Conta criada com sucesso"); // não há necessidade de return porque não há codigo a ser executado depois disso
         }
         catch(er){
