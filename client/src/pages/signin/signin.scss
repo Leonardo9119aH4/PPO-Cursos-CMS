@@ -1,3 +1,4 @@
+@import '../../global.scss';
 #signin{
     main{
     margin-top: 2rem;
@@ -5,13 +6,9 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    height: 100vh;
     & form {
-        margin: 5rem;
-        background-color: lightgray;
-        padding: 2rem;
-        border-radius: 2rem;
-        display: flex;
-        flex-direction: column;
+        @include floatMenu;
         }
     }  
 }

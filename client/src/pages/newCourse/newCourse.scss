@@ -1,0 +1,17 @@
+@import "../../global.scss";
+#newcourse{
+    main{
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    & form {
+        @include floatMenu;
+        & button{
+            @include gray-button;
+        }
+        }
+    }
+}

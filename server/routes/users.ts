@@ -13,7 +13,7 @@ type User = { // Define o tipo User com os campos necessários
     phone: string | null
 }
 
-async function getUsers(prisma: PrismaClient){ // Busca todos os usuários do banco de dados e retorna um array de objetos User
+export async function getUsers(prisma: PrismaClient){ // Busca todos os usuários do banco de dados e retorna um array de objetos User
     const users: User[] = (await prisma.user.findMany({
         select: {
             id: true,
@@ -34,7 +34,6 @@ async function getUsers(prisma: PrismaClient){ // Busca todos os usuários do ba
     })
     return users;
 }
-export default getUsers;
 
 function verifyDataConflict(users: User[], username: string | null, email: string | null, ignoreUser?: User){ // Verifica se há conflito de dados com os usuários existentes
     for(let i = 0; i < users.length; i++){
@@ -66,7 +65,7 @@ function randomString(count: number): string{ //gera a chave de autenticação a
     return result;
 }
 
-async function getLoggedUser(prisma: PrismaClient, userKey: string){ // Busca o usuário logado com base na chave de autenticação
+export async function getLoggedUser(prisma: PrismaClient, userKey: string){ // Busca o usuário logado com base na chave de autenticação
     const authKeys = await prisma.authKey.findMany({
         select: {
             key: true,

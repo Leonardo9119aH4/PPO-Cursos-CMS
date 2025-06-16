@@ -47,7 +47,8 @@ nav{
     left: calc(50vw - 1rem);
     box-shadow: 1px 1px 5px black;
     &>button{
-        @include mixins.button-black;
+        @include mixins.gray-button;
         margin: 0;
+        font-size: 1.5rem;
     }
 }
