@@ -62,17 +62,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                 res.status(404).json("Sem usuário para chave fornecida");
                 return;
             }
-            const titleHeader = req.headers.title;
-            const title = Array.isArray(titleHeader) ? titleHeader[0] : titleHeader; //frescura do TS, eu preciso fazer isso
-            if (!title) {
-                res.status(400).json("O título não pode ser vazio");
-                return;
-            }
-            if (await verifyCourseConflict(title, prisma, user.id)) {
-                res.status(409).json("O nome fornecido já existe");
-                return;
-            }
-            const courseStorage: string = `${storage}/users/${user.id}/${title}`;
+            const courseStorage: string = `${storage}/users/${user.id}/courses/new`;
             await fs.mkdir(courseStorage, {recursive: true});
             const uploader = createUploader(courseStorage, imageExtensions);
             uploader.single("thumbnail")(req, res, async function (err: any) {
@@ -96,6 +86,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                         userId: user.id
                         }
                     });
+                    await fs.rename(courseStorage, `${storage}/users/${user.id}/courses/${course.id}`);
                     res.status(200).json("Enviado com sucesso");
                 }
                 catch(er){
@@ -108,4 +99,62 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json("Erro interno no servidor");
         }
     })
+    app.get("/accountCourses", async (req: Request, res: Response) => {
+        try{
+            if(req.cookies.authKey == null){
+                res.status(204).json("Sem conta logada");
+                return;
+            }
+            const user = await getLoggedUser(prisma, req.cookies.authKey);
+            if(user == null){
+                res.clearCookie('authKey', {
+                    path: "/", 
+                    secure: false,    
+                    httpOnly: true,   
+                    sameSite: "lax"
+                });
+                res.status(404).json("Sem usuário para chave fornecida");
+                return;
+            }
+            const courses = await prisma.course.findMany({
+                select: {
+                    id: true,
+                    title: true,
+                    thubnail: true,
+                    description: true,
+                    maxLifes: true,
+                    practiceRecoveryLife: true
+                },
+                where: {
+                    userId: user.id
+                }
+            });
+        }
+        catch(er){
+            res.status(500).json("Erro interno no servidor");
+        }
+    });
+    app.get("/editCourse/:courseId", async (req: Request, res: Response) => {
+        try{
+            if(req.cookies.authKey == null){
+                res.status(204).json("Sem conta logada");
+                return;
+            }
+            const user = await getLoggedUser(prisma, req.cookies.authKey);
+            if(user == null){
+                res.clearCookie('authKey', {
+                    path: "/", 
+                    secure: false,    
+                    httpOnly: true,   
+                    sameSite: "lax"
+                });
+                res.status(404).json("Sem usuário para chave fornecida");
+                return;
+            }
+
+        }
+        catch(er){
+            res.status(500).json("Erro interno no servidor");
+        }
+    });
 }

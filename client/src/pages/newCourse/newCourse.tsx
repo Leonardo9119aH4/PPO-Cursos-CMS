@@ -10,8 +10,7 @@ function NewCourse(){
             const formData = new FormData(ev.target as HTMLFormElement);
             const courseResponse = await api.post("/newcourse", formData, {
                 headers: {
-                    "Content-Type": "multipart/form-data",
-                    "Title": formData.get("title") as string //gambiarra pra acessar o título no backend antes do multer
+                    "Content-Type": "multipart/form-data"
                 }
             });
             console.log(courseResponse);

@@ -130,7 +130,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
                     phone: req.body.phone
                 }
             });
-            await fs.mkdir(`${storage}/users/${user.id}`, {recursive: true});
+            await fs.mkdir(`${storage}/users/${user.id}/courses`, {recursive: true});
             res.status(201).json("Conta criada com sucesso"); // não há necessidade de return porque não há codigo a ser executado depois disso
         }
         catch(er){
