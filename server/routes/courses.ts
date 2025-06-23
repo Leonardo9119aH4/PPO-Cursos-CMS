@@ -3,14 +3,15 @@ import { Application, NextFunction, Request, Response } from "express";
 import multer, { MulterError } from "multer";
 import { getUsers, getLoggedUser, users }  from "./users";
 import fs from "fs/promises";
+import path from "path";
 
-function createUploader(storage: string, allowedTypes: string[]){ // Cria um middleware de upload de arquivos com multer
+function createUploader(storage: string, allowedTypes: string[], userId: number){ // Cria um middleware de upload de arquivos com multer
     const multerStorage = multer.diskStorage({
         destination: (req, file, cb) => {
             cb(null, storage)
         },
         filename: (req, file, cb) => {
-            cb(null, Date.now().toString()+"_"+file.originalname);
+            cb(null, Date.now().toString()+"_"+userId.toString());
         }
     });
     return multer({
@@ -25,7 +26,7 @@ function createUploader(storage: string, allowedTypes: string[]){ // Cria um mid
     });
 }
 
-async function verifyCourseConflict(title: string, prisma: PrismaClient, userId: number): Promise<Boolean>{
+async function verifyCourseConflict(title: string, prisma: PrismaClient, userId: number): Promise<Boolean>{ //verifica se já existe um curso com certo nome
     const courses = await prisma.course.findMany({
         select: {
             id: true,
@@ -43,9 +44,18 @@ async function verifyCourseConflict(title: string, prisma: PrismaClient, userId:
     return false;
 }
 
-export async function courses(app: Application, prisma: PrismaClient, storage: string) {
+async function findFile(storage: string, fileName: string): Promise<string | null> { //acha o caminho de qualquer arquivo de qualquer usuário
+    try {
+        
+    }
+    catch{
+        return null; 
+    }
+}
+
+export async function courses(app: Application, prisma: PrismaClient, storage: string) { 
     const imageExtensions = ["image/png", "image/jpg", "image/jpeg"];
-    app.post("/newcourse", async (req, res)=>{
+    app.post("/newcourse", async (req, res)=>{ //rota para criar um novo minicurso
         try{
             if(req.cookies.authKey == null){
                 res.status(204).json("Sem conta logada");
@@ -64,7 +74,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             }
             const courseStorage: string = `${storage}/users/${user.id}/courses/new`;
             await fs.mkdir(courseStorage, {recursive: true});
-            const uploader = createUploader(courseStorage, imageExtensions);
+            const uploader = createUploader(courseStorage, imageExtensions, user.id);
             uploader.single("thumbnail")(req, res, async function (err: any) {
                 if (err instanceof multer.MulterError) {
                     return res.status(400).json("Erro no upload");
@@ -83,6 +93,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                         timeRecoveryLife: "2025-06-16T12:00:00.000Z",
                         practiceRecoveryLife: Number(req.body.practiceRecoveryLife),
                         thubnail: req.file.filename,
+                        state: 0,
                         userId: user.id
                         }
                     });
@@ -99,7 +110,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json("Erro interno no servidor");
         }
     })
-    app.get("/accountCourses", async (req: Request, res: Response) => {
+    app.get("/accountCourses", async (req: Request, res: Response) => { //rota para obter os cursos de um jogador
         try{
             if(req.cookies.authKey == null){
                 res.status(204).json("Sem conta logada");
@@ -123,18 +134,31 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                     thubnail: true,
                     description: true,
                     maxLifes: true,
-                    practiceRecoveryLife: true
+                    practiceRecoveryLife: true,
+                    state: true,
                 },
                 where: {
                     userId: user.id
                 }
             });
+            res.status(200).json(courses);
         }
         catch(er){
             res.status(500).json("Erro interno no servidor");
         }
     });
-    app.get("/editCourse/:courseId", async (req: Request, res: Response) => {
+    app.get("/getCourseThubnail/:name", async (req: Request, res: Response) => {
+        try{
+            findFile(storage, req.params.name).then(data => {
+                console.log(data);
+            })
+            res.sendStatus(200);
+        }
+        catch(er){
+            res.send(500).json(er);
+        }
+    })
+    app.get("/editCourse/:courseId", async (req: Request, res: Response) => { //rota para editar um minicurso em específico
         try{
             if(req.cookies.authKey == null){
                 res.status(204).json("Sem conta logada");

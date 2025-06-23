@@ -16,10 +16,10 @@ datasource db {
 model User{
   id Int @id @default(autoincrement())
   username String @unique
-  password String
-  realname String
+  password String 
+  realname String?
   email String @unique
-  phone String
+  phone String?
   adminPosts Admin[]
   coursePosts Course[]
   studyingPosts Studying[]
@@ -33,10 +33,11 @@ model Course{
   id Int @id @default(autoincrement())
   title String @unique
   maxLifes Int
-  description String
+  description String?
   timeRecoveryLife DateTime
   practiceRecoveryLife Int
-  thubnail String
+  thubnail String?
+  state Int
   userId Int
   user User @relation(fields: [userId], references: [id])
   studyingPosts Studying[]
@@ -45,7 +46,7 @@ model Course{
 model Level{
   id Int @id @default(autoincrement())
   type String
-  content Json
+  content Json?
   recoveryLifes Int
   courseId Int
   course Course @relation(fields: [courseId], references: [id])

@@ -7,6 +7,7 @@ import Profile from "./pages/profile/profile";
 import Courses from "./pages/courses/courses";
 import NewCourse from './pages/newCourse/newCourse';
 import CourseEditor from './pages/courseEditor/courseEditor';
+import MyCourses from "./pages/myCourses/myCourses";
 
 function MainRoutes(){
     return (
@@ -18,6 +19,7 @@ function MainRoutes(){
             <Route path="/profile" element={<Profile />} />
             <Route path="/newCourse" element={<NewCourse />} />
             <Route path="/courses" element={<Courses />} />
+            <Route path="/mycourses" element={<MyCourses />} />
             <Route path="/courseEditor/:courseId" element={<CourseEditor />} />
         </Routes>
     )

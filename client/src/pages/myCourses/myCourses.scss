@@ -1,0 +1,10 @@
+div#mycourses{
+    main{
+        display: flex;
+        flex-direction: column;
+        margin-top: 5vh;
+        section{
+            display: grid;
+        }
+    }
+}

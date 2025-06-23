@@ -170,7 +170,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
                     }
                     else{
                         if(await bcrypt.compare(req.body.password, user.password)){
-                            const authKey = randomString(20);
+                            const authKey = randomString(20)+user.id;
                             await prisma.authKey.create({
                                 data: {
                                     key: authKey,
