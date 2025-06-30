@@ -11,8 +11,6 @@ function MyCourses(){
             try{
                 const coursesArray = await api.get("/accountCourses");
                 setCourses(coursesArray.data);
-                console.log(coursesArray.data)
-                api.get("/getCourseThubnail/1750103035498_Acer_Wallpaper_01_5000x2814.jpg");
             }
             catch(er){
                 console.log(er)
@@ -26,28 +24,40 @@ function MyCourses(){
             <div id="mycourses">
                 <main>
                     <section id="public">
-                        {courses.filter(c => c.state === 1).map(course => {
-                            return ( <div key={course.id}>
-                                <h2>{course.title}</h2>
-                                <p>{course.description}</p>
-                            </div> )
-                        })}
+                        <h1>Públicos</h1>
+                        <div className='courses'>
+                            {courses.filter(c => c.state === 1).map(course => {
+                                return ( <div key={course.id}>
+                                    <h1>{course.title}</h1>
+                                    <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
+                                    <p>{course.description}</p>
+                                </div> )
+                            })}
+                        </div>
                     </section>
                     <section id="private">
-                        {courses.filter(c => c.state === 2).map(course => {
-                            return ( <div key={course.id}>
-                                <h2>{course.title}</h2>
-                                <p>{course.description}</p>
-                            </div> )
-                        })}
+                        <h1>Privados</h1>
+                        <div className='courses'>
+                            {courses.filter(c => c.state === 2).map(course => {
+                                return ( <div key={course.id}>
+                                    <h1>{course.title}</h1>
+                                    <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
+                                    <p>{course.description}</p>
+                                </div> )
+                            })}
+                        </div>
                     </section>
                     <section id="incomplete">
-                        {courses.filter(c => c.state === 0).map(course => {
-                            return ( <div key={course.id}>
-                                <h2>{course.title}</h2>
-                                <p>{course.description}</p>
-                            </div> )
-                        })}
+                        <h1>Incompletos</h1>
+                        <div className='courses'>
+                            {courses.filter(c => c.state === 0).map(course => {
+                                return ( <div key={course.id}>
+                                    <h1>{course.title}</h1>
+                                    <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
+                                    <p>{course.description}</p>
+                                </div> )
+                            })}
+                        </div>
                     </section>
                 </main>
             </div>
