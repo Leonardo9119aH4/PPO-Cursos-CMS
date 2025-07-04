@@ -3,17 +3,25 @@ import Nav from '../../components/nav/nav';
 import Footer from '../../components/footer/footer';
 import api from '../../api';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function MyCourses(){
+    const navigate = useNavigate();
     const [courses, setCourses] = useState<any[]>([]);
     useEffect(()=>{
         (async()=>{
             try{
                 const coursesArray = await api.get("/accountCourses");
+                if(coursesArray.status == 204){
+                    navigate("/");
+                }
                 setCourses(coursesArray.data);
             }
-            catch(er){
-                console.log(er)
+            catch(er: any){
+                if(er.response.status == 404){
+                    navigate("/");
+                }
+                console.log(er);
             }
         })();
         

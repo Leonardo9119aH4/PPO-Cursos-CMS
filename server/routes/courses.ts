@@ -166,7 +166,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                     httpOnly: true,   
                     sameSite: "lax"
                 });
-                res.status(404).json("Sem usuário para chave fornecida");
+                res.status(404).json(["Sem usuário para chave fornecida", 0]); //array para o cliente diferenciar se o 404 é porque não achou o usuário
                 return;
             }
             const course = await prisma.course.findUnique({
@@ -183,7 +183,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                 }
             });
             if(!course){
-                res.status(404).json("Curso não existe");
+                res.status(404).json(["Curso não existe", 1]); //array para o cliente diferenciar se o 404 é porque não achou o curso
                 return;
             }
             if(course.userId != user.id){
