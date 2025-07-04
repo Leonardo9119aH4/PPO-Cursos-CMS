@@ -60,7 +60,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                     httpOnly: true,   
                     sameSite: "lax"
                 });
-                res.status(404).json("Sem usuário para chave fornecida");
+                res.status(404).json({message: "Sem usuário para chave fornecida", error: 0});
                 return;
             }
             const courseStorage: string = `${storage}/users/${user.id}/courses/new`; //cria a pasta como new pois não se sabe o id do curso
