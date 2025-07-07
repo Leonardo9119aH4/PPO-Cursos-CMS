@@ -51,7 +51,7 @@ function verifyDataConflict(users: User[], username: string | null, email: strin
 function verifyPasswordSecurity(password: string){ // Verifica se a senha atende aos requisitos de segurança
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])[a-zA-Z\d\W_]{8,}$/;
     if(!regex.test(password)){
-        return {status: 400, message: "A senha precisa ter pelo menos 8 caracteres e ao menos 1 número, 1 maiúscula, 1 minúscula e 1 caractere especial."};
+        return {status: 400, message: "A senha precisa ter pelo menos 8 caracteres e ao menos 1 número, 1 maiúscula, 1 minúscula e 1 caractere especial.", error: 3};
     }
     return {status: 200};
 }
@@ -91,7 +91,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
     app.post("/signup", async (req: Request, res: Response)=>{ // Rota para criar uma nova conta de usuário
         try{
             if(req.body.username == null || req.body.email == null || req.body.password == null){
-                res.status(400).json("Informações incompletas");
+                res.status(400).json({message: "Informações incompletas", error: 2});
                 return; // interrompe a execução do código ao devolver a resposta ao servidor
             }
             const users: User[] = (await prisma.user.findMany({
@@ -117,7 +117,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
             }
             const passwordSecurity = verifyPasswordSecurity(req.body.password);
             if(passwordSecurity.status !== 200){
-                res.status(passwordSecurity.status).json(passwordSecurity.message);
+                res.status(passwordSecurity.status).json({message: passwordSecurity.message, error: 3});
                 return; // interrompe a execução do código ao devolver a resposta ao servidor
             }
             const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -142,7 +142,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
     app.post("/signin", async (req: Request, res: Response)=>{ // Rota para fazer login de um usuário existente
         try{
             if(req.body.login == null || req.body.password == null){
-                res.status(400).json("Informações incompletas");
+                res.status(400).json({message: "Informações incompletas", error: 2});
                 return; // interrompe a execução do código ao devolver a resposta ao servidor
             }
             const users: User[] = (await prisma.user.findMany({
@@ -214,7 +214,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
                 httpOnly: true,   
                 sameSite: "lax"
             });
-            res.status(404).json("Sem usuário para chave fornecida");
+            res.status(401).json("Sem usuário para chave fornecida");
             return;
         }
         res.status(200).json(user);
@@ -223,7 +223,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
     app.delete("/logout", async (req: Request, res: Response) => { // Rota para fazer logout do usuário
         const userKey = req.cookies.authKey;
         if (!userKey) {
-            res.status(400).json("Chave de autenticação não encontrada.");
+            res.status(400).json({message: "Não há conta logada / usuário inexistente", error: 1});
             return;
         }
         res.clearCookie("authKey", {
@@ -254,7 +254,7 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
                     httpOnly: true,   
                     sameSite: "lax"
                 });
-                res.status(404).json("Sem usuário para chave fornecida");
+                res.status(401).json("Sem usuário para chave fornecida");
                 return;
             }
             const users = await getUsers(prisma);

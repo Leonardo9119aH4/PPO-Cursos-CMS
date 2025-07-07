@@ -60,7 +60,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                     httpOnly: true,   
                     sameSite: "lax"
                 });
-                res.status(404).json({message: "Sem usuário para chave fornecida", error: 0});
+                res.status(401).json("Sem usuário para chave fornecida");
                 return;
             }
             const courseStorage: string = `${storage}/users/${user.id}/courses/new`; //cria a pasta como new pois não se sabe o id do curso
@@ -68,12 +68,13 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             const uploader = createUploader(courseStorage, imageExtensions, "thubnail");
             uploader.single("thumbnail")(req, res, async function (err: any) {
                 if (err instanceof multer.MulterError) {
-                    return res.status(400).json("Erro no upload");
-                } else if (err) {
+                    return res.status(400).json({message: "Erro no upload", error: 4});
+                }
+                else if (err) {
                     return res.status(500).json("Erro interno");
                 }
                 if (!req.file) {
-                    return res.status(404).json("Arquivo não encontrado ou tipo não suportado");
+                    return res.status(415).json("Tipo não suportado");
                 }
                 try{ // é necessário outro try pra não crashar o servidor
                     const course = await prisma.course.create({
@@ -97,7 +98,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                 }
                 catch(er){
                     await fs.rm(courseStorage, { recursive: true, force: true });
-                    res.status(400).json("Algum erro ao salvar no banco de dados");
+                    res.status(500).json("Algum erro ao salvar no banco de dados");
                 }
             });
         }
@@ -166,7 +167,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                     httpOnly: true,   
                     sameSite: "lax"
                 });
-                res.status(404).json(["Sem usuário para chave fornecida", 0]); //array para o cliente diferenciar se o 404 é porque não achou o usuário
+                res.status(401).json("Sem usuário para chave fornecida"); 
                 return;
             }
             const course = await prisma.course.findUnique({
@@ -183,7 +184,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                 }
             });
             if(!course){
-                res.status(404).json(["Curso não existe", 1]); //array para o cliente diferenciar se o 404 é porque não achou o curso
+                res.status(404).json("Curso não existe"); 
                 return;
             }
             if(course.userId != user.id){
@@ -195,6 +196,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                     type: true,
                     content: true,
                     recoveryLifes: true,
+                    order: true,
                     courseId: true,
                 },
                 where: {
@@ -207,4 +209,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json("Erro interno no servidor");
         }
     });
+    app.post("/newLevel/:courseId", async(req: Request, res: Response) => {
+        
+    })
 }

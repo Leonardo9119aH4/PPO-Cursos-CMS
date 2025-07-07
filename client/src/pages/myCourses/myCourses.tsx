@@ -18,7 +18,7 @@ function MyCourses(){
                 setCourses(coursesArray.data);
             }
             catch(er: any){
-                if(er.response.status == 404){
+                if(er.response.status == 401){
                     navigate("/");
                 }
                 console.log(er);

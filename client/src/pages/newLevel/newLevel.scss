@@ -1,0 +1,12 @@
+@import '../../global.scss';
+#new-level{
+    height: 100vh;
+    main{
+        height: 100vh;
+        @include centralizeColumm;
+        & form{
+            margin-top: 10vh;
+            @include floatMenu;
+        }
+    }
+}

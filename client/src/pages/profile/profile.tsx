@@ -38,7 +38,7 @@ function Profile(){
                 setPhoneHook(account.data.phone);
             }
             catch(er: any){
-                if(er.response.status == 404){
+                if(er.response.status == 401){
                     navigate("/");
                     return;
                 }

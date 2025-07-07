@@ -48,6 +48,7 @@ model Level{
   type String
   content Json?
   recoveryLifes Int
+  order Int
   courseId Int
   course Course @relation(fields: [courseId], references: [id])
 }

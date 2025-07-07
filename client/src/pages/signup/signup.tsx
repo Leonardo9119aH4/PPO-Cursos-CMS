@@ -16,7 +16,12 @@ function SignUp(){
             
         }
         catch(er: any){
-            setAccountStatus(String(er.response.data));
+            if(er.response.status == 400){
+                setAccountStatus(String(er.response.data.message));
+            }
+            else{
+                setAccountStatus(String(er.response.data));
+            }
         }
     }
     
