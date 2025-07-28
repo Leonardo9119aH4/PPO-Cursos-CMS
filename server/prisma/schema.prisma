@@ -23,7 +23,6 @@ model User{
   adminPosts Admin[]
   coursePosts Course[]
   studyingPosts Studying[]
-  keysPosts AuthKey[]
 }
 model Admin{
   id Int @id 
@@ -34,7 +33,7 @@ model Course{
   title String @unique
   maxLifes Int
   description String?
-  timeRecoveryLife DateTime
+  timeRecoveryLife String //Unsupported("TIME")
   practiceRecoveryLife Int
   thubnail String?
   state Int
@@ -62,9 +61,4 @@ model Studying{
   courseId Int
   course Course @relation(fields: [courseId], references: [id])
 }
-model AuthKey {
-  id Int @id @default(autoincrement())
-  key String @unique
-  userId Int
-  user User @relation(fields: [userId], references: [id])
-}
+

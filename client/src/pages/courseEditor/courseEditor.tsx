@@ -15,10 +15,6 @@ function CourseEditor() {
         (async()=>{
             try{
                 const info = await api.get<Course>(`/getCourseToEdit/${courseId}`);
-                if(info.status == 204){
-                    navigate("/signin");
-                    return;
-                }
                 console.log(info.data)
                 setLevels(info.data.levels);
             }
@@ -27,9 +23,8 @@ function CourseEditor() {
                     navigate("/signin");
                 }
             }
-            
         })();
-    })
+    }, [courseId, navigate])
     return (
         <>
             <Nav />

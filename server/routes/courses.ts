@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Application, NextFunction, Request, Response } from "express";
 import multer, { MulterError } from "multer";
-import { getUsers, getLoggedUser, users }  from "./users";
+import { getUsers, requireLogin, users }  from "./users";
 import fs from "fs/promises";
 import path from "path";
 
@@ -46,24 +46,9 @@ async function verifyCourseConflict(title: string, prisma: PrismaClient, userId:
 
 export async function courses(app: Application, prisma: PrismaClient, storage: string) { 
     const imageExtensions = ["image/png", "image/jpg", "image/jpeg"];
-    app.post("/newcourse", async (req, res)=>{ //rota para criar um novo minicurso
+    app.post("/newcourse", requireLogin(prisma), async (req, res)=>{ //rota para criar um novo minicurso
         try{
-            if(req.cookies.authKey == null){
-                res.status(204).json("Sem conta logada");
-                return;
-            }
-            const user = await getLoggedUser(prisma, req.cookies.authKey);
-            if(user == null){
-                res.clearCookie('authKey', {
-                    path: "/", 
-                    secure: false,    
-                    httpOnly: true,   
-                    sameSite: "lax"
-                });
-                res.status(401).json("Sem usuário para chave fornecida");
-                return;
-            }
-            const courseStorage: string = `${storage}/users/${user.id}/courses/new`; //cria a pasta como new pois não se sabe o id do curso
+            const courseStorage: string = `${storage}/users/${req.session.user!.id}/courses/new`; //cria a pasta como new pois não se sabe o id do curso
             await fs.mkdir(courseStorage, {recursive: true});
             const uploader = createUploader(courseStorage, imageExtensions, "thubnail");
             uploader.single("thumbnail")(req, res, async function (err: any) {
@@ -82,17 +67,17 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                         title: req.body.title,
                         maxLifes: Number(req.body.maxLifes),
                         description: req.body.description,
-                        timeRecoveryLife: "2025-06-16T12:00:00.000Z",
+                        timeRecoveryLife: "000:00:00", //só para teste
                         practiceRecoveryLife: Number(req.body.practiceRecoveryLife),
-                        thubnail: `/users/${user.id}/courses/new/${req.file.filename}`, //salva o caminho como new pois não se sabe o id do curso
+                        thubnail: `/users/${req.session.user!.id}/courses/new/${req.file.filename}`, //salva o caminho como new pois não se sabe o id do curso
                         state: 0,
-                        userId: user.id
+                        userId: req.session.user!.id
                         }
                     });
-                    await fs.rename(courseStorage, `${storage}/users/${user.id}/courses/${course.id}`); //altera o nome pasta de new para o id do curso
+                    await fs.rename(courseStorage, `${storage}/users/${req.session.user!.id}/courses/${course.id}`); //altera o nome pasta de new para o id do curso
                     await prisma.course.update({
                         where: {id: course.id},
-                        data: {thubnail: `${storage}/users/${user.id}/courses/${course.id}/${req.file.filename}`} //altera o caminho no banco de dados, sincronizando com o disco
+                        data: {thubnail: `/users/${req.session.user!.id}/courses/${course.id}/${req.file.filename}`} //altera o caminho no banco de dados, sincronizando com o disco
                     })
                     res.status(200).json("Enviado com sucesso");
                 }
@@ -106,23 +91,8 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json("Erro interno no servidor");
         }
     })
-    app.get("/accountCourses", async (req: Request, res: Response) => { //rota para obter os cursos de um jogador
+    app.get("/accountCourses", requireLogin(prisma), async (req: Request, res: Response) => { //rota para obter os cursos de um jogador
         try{
-            if(req.cookies.authKey == null){
-                res.status(204).json("Sem conta logada");
-                return;
-            }
-            const user = await getLoggedUser(prisma, req.cookies.authKey);
-            if(user == null){
-                res.clearCookie('authKey', {
-                    path: "/", 
-                    secure: false,    
-                    httpOnly: true,   
-                    sameSite: "lax"
-                });
-                res.status(404).json("Sem usuário para chave fornecida");
-                return;
-            }
             const courses = await prisma.course.findMany({
                 select: {
                     id: true,
@@ -134,7 +104,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                     state: true,
                 },
                 where: {
-                    userId: user.id
+                    userId: req.session.user!.id
                 }
             });
             res.status(200).json(courses);
@@ -153,23 +123,8 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.send(500).json(er);
         }
     })
-    app.get("/getCourseToEdit/:courseId", async (req: Request, res: Response) => { //rota para obter os níveis para a edição do minicurso
+    app.get("/getCourseToEdit/:courseId", requireLogin(prisma), async (req: Request, res: Response) => { //rota para obter os níveis para a edição do minicurso
         try{
-            if(req.cookies.authKey == null){
-                res.status(204).json("Sem conta logada");
-                return;
-            }
-            const user = await getLoggedUser(prisma, req.cookies.authKey);
-            if(user == null){
-                res.clearCookie('authKey', {
-                    path: "/", 
-                    secure: false,    
-                    httpOnly: true,   
-                    sameSite: "lax"
-                });
-                res.status(401).json("Sem usuário para chave fornecida"); 
-                return;
-            }
             const course = await prisma.course.findUnique({
                 where: {
                     id: Number(req.params.courseId)
@@ -187,7 +142,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                 res.status(404).json("Curso não existe"); 
                 return;
             }
-            if(course.userId != user.id){
+            if(course.userId != req.session.user!.id){
                 res.status(403).json("Acesso negado");
                 return;
             }

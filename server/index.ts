@@ -6,6 +6,8 @@ import { users } from "./routes/users";
 import { courses } from "./routes/courses";
 import multer from "multer";
 import dotenv from "dotenv";
+import session from "express-session";
+import { User } from "./routes/users";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -20,12 +22,26 @@ const corsOptions = {
 // const corsOptions = { // Aceita qualquer origem, usar para DESENVOLVIMENTO, dá erro com cookies
 //     origin: "*"
 // };
+declare module "express-session" {
+    interface SessionData {
+        user?: User;
+    }
+}
 
 async function main(){
     app.listen(process.env.SERVER_PORT, ()=>{});
     app.use(cors(corsOptions));
     app.use(express.json());
     app.use(cookieParser());
+    app.use(session({
+        secret: "sla",
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: false,
+            sameSite: "lax"
+        }
+    }))
     users(app, prisma, storage);
     courses(app, prisma, storage);
 }

@@ -12,9 +12,6 @@ function MyCourses(){
         (async()=>{
             try{
                 const coursesArray = await api.get("/accountCourses");
-                if(coursesArray.status == 204){
-                    navigate("/");
-                }
                 setCourses(coursesArray.data);
             }
             catch(er: any){

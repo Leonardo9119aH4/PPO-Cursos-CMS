@@ -28,10 +28,6 @@ function Profile(){
         const updateProfile = async () => {
             try{
                 const account = await api.get("/getinfo");
-                if(account.status == 204){
-                    navigate("/");
-                    return;
-                }
                 setUsernameHook(account.data.username);
                 setRealnameHook(account.data.realname);
                 setEmailHook(account.data.email);
