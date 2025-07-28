@@ -33,7 +33,7 @@ model Course{
   title String @unique
   maxLifes Int
   description String?
-  timeRecoveryLife String //Unsupported("TIME")
+  secondsRecoveryLife Int
   practiceRecoveryLife Int
   thubnail String?
   state Int
@@ -44,7 +44,7 @@ model Course{
 }
 model Level{
   id Int @id @default(autoincrement())
-  type String
+  type Int
   content Json?
   recoveryLifes Int
   order Int

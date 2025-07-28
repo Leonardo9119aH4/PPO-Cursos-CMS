@@ -1,5 +1,5 @@
 import express, {Application, Request, Response} from "express";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, Course } from "@prisma/client";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { users } from "./routes/users";
@@ -25,6 +25,13 @@ const corsOptions = {
 declare module "express-session" {
     interface SessionData {
         user?: User;
+    }
+}
+declare global {
+    namespace Express {
+        interface Request {
+            course?: Course;
+        }
     }
 }
 

@@ -9,6 +9,7 @@ import NewCourse from './pages/newCourse/newCourse';
 import CourseEditor from './pages/courseEditor/courseEditor';
 import MyCourses from "./pages/myCourses/myCourses";
 import NewLevel from "./pages/newLevel/newLevel";
+import TheoryEditor from "./pages/theoryEditor/theoryEditor";
 
 function MainRoutes(){
     return (
@@ -23,6 +24,7 @@ function MainRoutes(){
             <Route path="/mycourses" element={<MyCourses />} />
             <Route path="/courseEditor/:courseId" element={<CourseEditor />} />
             <Route path="/newLevel/:courseId" element={<NewLevel />} />
+            <Route path="/theoryEditor/:levelId" element={<TheoryEditor />} />
         </Routes>
     )
 }

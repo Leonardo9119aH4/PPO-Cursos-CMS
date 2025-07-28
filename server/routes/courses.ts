@@ -26,22 +26,36 @@ function createUploader(storage: string, allowedTypes: string[], name: string){ 
     });
 }
 
-async function verifyCourseConflict(title: string, prisma: PrismaClient, userId: number): Promise<Boolean>{ //verifica se já existe um curso com certo nome
-    const courses = await prisma.course.findMany({
-        select: {
-            id: true,
-            title: true
-        },
-        where: {
-            userId: userId
+function verifyCourseAccess(prisma: PrismaClient){ //verifica se o usuário é dono do curso (possui acesso de edição)
+    return async (req: Request, res: Response, next: Function) => {
+        await requireLogin(prisma)(req, res, next);
+        const course = await prisma.course.findUnique({
+            where: {
+                id: Number(req.params.courseId)
+            },
+            select:{
+                id: true,
+                title: true,
+                maxLifes: true,
+                description: true,
+                secondsRecoveryLife: true,
+                practiceRecoveryLife: true,
+                thubnail: true,
+                state: true,
+                userId: true,
+            }
+        });
+        if(!course){
+            res.status(404).json("Curso não existe"); 
+            return;
         }
-    });
-    for(let course of courses){
-        if(course.title == title){
-            return true;
+        if(course.userId != req.session.user!.id){
+            res.status(403).json("Acesso negado");
+            return;
         }
+        req.course = course;
+        next();
     }
-    return false;
 }
 
 export async function courses(app: Application, prisma: PrismaClient, storage: string) { 
@@ -67,7 +81,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                         title: req.body.title,
                         maxLifes: Number(req.body.maxLifes),
                         description: req.body.description,
-                        timeRecoveryLife: "000:00:00", //só para teste
+                        secondsRecoveryLife: 1000, //só para teste
                         practiceRecoveryLife: Number(req.body.practiceRecoveryLife),
                         thubnail: `/users/${req.session.user!.id}/courses/new/${req.file.filename}`, //salva o caminho como new pois não se sabe o id do curso
                         state: 0,
@@ -123,29 +137,9 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.send(500).json(er);
         }
     })
-    app.get("/getCourseToEdit/:courseId", requireLogin(prisma), async (req: Request, res: Response) => { //rota para obter os níveis para a edição do minicurso
+    app.get("/getCourseToEdit/:courseId", verifyCourseAccess(prisma), async (req: Request, res: Response) => { //rota para obter os níveis para a edição do minicurso
         try{
-            const course = await prisma.course.findUnique({
-                where: {
-                    id: Number(req.params.courseId)
-                },
-                select:{
-                    id: true,
-                    title: true,
-                    maxLifes: true,
-                    timeRecoveryLife: true,
-                    practiceRecoveryLife: true,
-                    userId: true,
-                }
-            });
-            if(!course){
-                res.status(404).json("Curso não existe"); 
-                return;
-            }
-            if(course.userId != req.session.user!.id){
-                res.status(403).json("Acesso negado");
-                return;
-            }
+            const course = req.course!;
             const levels = await prisma.level.findMany({ //é normal obter valor nulo
                 select: {
                     type: true,
@@ -164,7 +158,27 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json("Erro interno no servidor");
         }
     });
-    app.post("/newLevel/:courseId", async(req: Request, res: Response) => {
+    app.post("/createLevel/:type/:courseId", verifyCourseAccess(prisma), async (req: Request, res: Response) => {
+        const lastLevel = await prisma.level.findFirst({
+            orderBy: {
+                order: 'desc'
+            },
+            where: {
+                courseId: Number(req.params.courseId)
+            }
+        });
+        const level = await prisma.level.create({
+            data: {
+                type: 1,
+                recoveryLifes: 0,
+                order: lastLevel ? lastLevel.order+1 : 0,
+                courseId: req.session.user!.id
+            }
+        });
+        res.status(200).json(level);
+    });
+    app.get("/getleveltoedit", verifyCourseAccess(prisma), async (req: Request, res: Response)=>{
+        const course = req.course!;
         
     })
 }

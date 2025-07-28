@@ -14,3 +14,8 @@ Em "error", cada número corresponde a:
     <li>3 = Senha insegura</li>
     <li>4 = Erro no upload</li>
 </ul>
+O atributo type segue a tabela:
+<ul>
+    <li>0- teoria</li>
+    <li>1- quiz</li>
+</ul>

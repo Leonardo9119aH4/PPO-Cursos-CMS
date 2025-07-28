@@ -57,15 +57,6 @@ function verifyPasswordSecurity(password: string){ // Verifica se a senha atende
     return {status: 200};
 }
 
-function randomString(count: number): string{ //gera uma string aleatória (vestígio de um código obscuro)
-    const chars: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result: string = "";
-    for(let i=0; i<count; i++){
-        result += chars.charAt(Math.floor(Math.random()*chars.length));
-    }
-    return result;
-}
-
 export function requireLogin(prisma: PrismaClient){ // função fábrica que cria o middleware requireLogin
     return async (req: Request, res: Response, next: Function) => { // middleware para verificar se a sessão existe e se é válida
         let userExists: Boolean = false;

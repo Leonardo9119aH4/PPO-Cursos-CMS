@@ -11,6 +11,7 @@ function CourseEditor() {
     const navigate = useNavigate();
     const {courseId} = useParams<{courseId: string}>();
     const [levels, setLevels] = useState<Level[]>([]);
+    const [newLevelWindow, setNewLevelWindow] = useState<boolean>();
     useEffect(()=>{
         (async()=>{
             try{
@@ -25,6 +26,10 @@ function CourseEditor() {
             }
         })();
     }, [courseId, navigate])
+    const newTheory = async () => {
+        const level = await api.post(`/createLevel/q/${courseId}`);
+        navigate(`/theoryEditor/${level.data.order}`);
+    }
     return (
         <>
             <Nav />
@@ -42,7 +47,16 @@ function CourseEditor() {
                             ))
                         )}
                     </ul>
-                    <button onClick={() => navigate("/")}>+</button>
+                    {newLevelWindow ? (
+                        <div id="newLevelWindow">
+                            <p>Selecione o tipo:</p>
+                            <button onClick={() => newTheory()}>Nível teórico</button>
+                            <button onClick={() => navigate("/")}>Nível prático</button>
+                            <button onClick={() => setNewLevelWindow(false)}>Cancelar</button>
+                        </div>
+                    ) : (
+                        <button onClick={() => setNewLevelWindow(true)}>+</button>
+                    )}
                 </main>
             </div>
             <Footer />
