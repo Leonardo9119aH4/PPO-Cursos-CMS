@@ -3,8 +3,9 @@ import { Application, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import multer from "multer";
 import fs from "fs/promises";
+import session from "express-session"
 
-type User = { // Define o tipo User com os campos necessários
+export type User = { // Define o tipo User com os campos necessários
     id: number,
     username: string | null,
     password: string | null,
@@ -56,7 +57,7 @@ function verifyPasswordSecurity(password: string){ // Verifica se a senha atende
     return {status: 200};
 }
 
-function randomString(count: number): string{ //gera a chave de autenticação a ser salva no cookie
+function randomString(count: number): string{ //gera uma string aleatória (vestígio de um código obscuro)
     const chars: string = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let result: string = "";
     for(let i=0; i<count; i++){
@@ -65,29 +66,40 @@ function randomString(count: number): string{ //gera a chave de autenticação a
     return result;
 }
 
-export async function getLoggedUser(prisma: PrismaClient, userKey: string){ // Busca o usuário logado com base na chave de autenticação
-    const authKeys = await prisma.authKey.findMany({
-        select: {
-            key: true,
-            userId: true,
+export function requireLogin(prisma: PrismaClient){ // função fábrica que cria o middleware requireLogin
+    return async (req: Request, res: Response, next: Function) => { // middleware para verificar se a sessão existe e se é válida
+        let userExists: Boolean = false;
+        if(!req.session.user){
+            res.status(401).json("Não autenticado");
+            return;
         }
-    });
-    const users = await getUsers(prisma);
-    for(const authKey of authKeys){
-        if(authKey.key == userKey){
-            for(const user of users){
-                if(user.id == authKey.userId){
-                    return user;
-                }
+        const users = await prisma.user.findMany({
+            select: {
+                id: true
             }
-            console.error("AuthKey referenciando usuário inexistente");
-            return null;
+        })
+        for(const user of users){ // evita sessões com usuário fantasma
+            if(user.id == req.session.user.id){
+                userExists = true;
+                break;
+            }
         }
-    }
-    return null;
+        if(!userExists){
+            req.session.destroy(er => {
+                if(er){
+                    res.status(500).json("Erro com sessão inválida");
+                    return;
+                }
+                res.clearCookie("connect.sid");
+                res.status(401).json("Não autenticado");
+                return;
+            });
+        }
+        next();
+    }  
 }
 
-export async function users(app: Application, prisma: PrismaClient, storage: string){ // Define as rotas relacionadas aos usuários
+export async function users(app: Application, prisma: PrismaClient, storage: string): Promise<void> { // Define as rotas relacionadas aos usuários
     app.post("/signup", async (req: Request, res: Response)=>{ // Rota para criar uma nova conta de usuário
         try{
             if(req.body.username == null || req.body.email == null || req.body.password == null){
@@ -170,20 +182,8 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
                     }
                     else{
                         if(await bcrypt.compare(req.body.password, user.password)){
-                            const authKey = randomString(20)+user.id;
-                            await prisma.authKey.create({
-                                data: {
-                                    key: authKey,
-                                    userId: user.id,
-                                },
-                            });
-                            res.cookie('authKey', authKey, {
-                                path: '/',
-                                secure: false,
-                                httpOnly: true,
-                                sameSite: "lax",
-                            });
-                            res.status(200).json("Logado com sucesso!");
+                            req.session.user = user;
+                            res.status(200).json("Login realizado com êxito.")
                             return;
                         }
                         else{
@@ -201,64 +201,24 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
         }
     });
 
-    app.get("/getinfo", async (req: Request, res: Response)=>{ // Rota para obter informações do usuário logado
-        if(req.cookies.authKey == null){
-            res.status(204).json("Sem conta logada");
-            return;
-        }
-        const user = await getLoggedUser(prisma, req.cookies.authKey);
-        if(user == null){
-            res.clearCookie('authKey', {
-                path: "/", 
-                secure: false,    
-                httpOnly: true,   
-                sameSite: "lax"
-            });
-            res.status(401).json("Sem usuário para chave fornecida");
-            return;
-        }
-        res.status(200).json(user);
+    app.get("/getinfo", requireLogin(prisma), async (req: Request, res: Response)=>{
+        res.status(200).json(req.session.user);
     });
 
     app.delete("/logout", async (req: Request, res: Response) => { // Rota para fazer logout do usuário
-        const userKey = req.cookies.authKey;
-        if (!userKey) {
-            res.status(400).json({message: "Não há conta logada / usuário inexistente", error: 1});
-            return;
-        }
-        res.clearCookie("authKey", {
-            path: "/", 
-            secure: false,    
-            httpOnly: true,   
-            sameSite: "lax" 
-        });
-        await prisma.authKey.delete({
-            where: {
-                key: userKey
+        req.session.destroy(er => {
+            if(er){
+                return res.status(500).json("Erro ao realizar logout");
             }
+            res.clearCookie("connect.sid");
+            return res.status(200).json("Logout realizado com êxito!");
         });
-        res.status(200).json("Logout realizado com sucesso!");
     });
 
-    app.put("/update", async (req: Request, res: Response) => { // Rota para atualizar as informações do usuário logado
-        try{
-            if(req.cookies.authKey == null){
-                res.status(204).json("Sem conta logada");
-                return;
-            }
-            const user = await getLoggedUser(prisma, req.cookies.authKey);
-            if(user == null){
-                res.clearCookie('authKey', {
-                    path: "/", 
-                    secure: false,    
-                    httpOnly: true,   
-                    sameSite: "lax"
-                });
-                res.status(401).json("Sem usuário para chave fornecida");
-                return;
-            }
+    app.put("/update", requireLogin(prisma), async (req: Request, res: Response) => { // Rota para atualizar as informações do usuário logado
+        try{    
             const users = await getUsers(prisma);
-            const dataConflict = verifyDataConflict(users, req.body.username, req.body.email, user);
+            const dataConflict = verifyDataConflict(users, req.body.username, req.body.email, req.session.user);
             if(dataConflict.status !== 200){ //evita conflitos  
                 res.status(dataConflict.status).json(dataConflict.message);
                 return;
@@ -268,16 +228,16 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
             if(req.body.realname !== null && req.body.realname !== undefined && req.body.realname.trim() !== "") data.realname = req.body.realname;
             if (req.body.email !== null && req.body.email !== undefined && req.body.email.trim() !== "") data.email = req.body.email;
             if(req.body.phone !== null && req.body.phone !== undefined && req.body.phone.trim() !== "") data.phone = req.body.phone;
-            await prisma.user.update({
-                where: {id: user.id},
+            const user = await prisma.user.update({
+                where: {id: req.session.user!.id},
                 data
             });
+            req.session.user = user;
             res.status(200).json(user);
         }
         catch(er){
             res.status(500).json(er);
         }
-
     });
 
     app.post("/updatePassword", async (req: Request, res: Response)=>{ 

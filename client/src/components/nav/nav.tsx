@@ -16,7 +16,7 @@ function Nav(){
         const updateNav = async ()=>{
             try{
                 const accountInfo = await api.get("/getinfo");
-                console.log(accountInfo.status)
+                console.log(accountInfo.data)
                 if(accountInfo.status == 200){
                     setIsLoggedIn(true);
                 }
@@ -29,7 +29,7 @@ function Nav(){
             }  
         }
         updateNav();
-    })
+    }, [])
 
     return (
         <>
