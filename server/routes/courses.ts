@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Course } from "@prisma/client";
 import { Application, NextFunction, Request, Response } from "express";
 import multer, { MulterError } from "multer";
 import { getUsers, requireLogin, users }  from "./users";
@@ -26,36 +26,32 @@ function createUploader(storage: string, allowedTypes: string[], name: string){ 
     });
 }
 
-function verifyCourseAccess(prisma: PrismaClient){ //verifica se o usuário é dono do curso (possui acesso de edição)
-    return async (req: Request, res: Response, next: Function) => {
-        await requireLogin(prisma)(req, res, next);
-        const course = await prisma.course.findUnique({
-            where: {
-                id: Number(req.params.courseId)
-            },
-            select:{
-                id: true,
-                title: true,
-                maxLifes: true,
-                description: true,
-                secondsRecoveryLife: true,
-                practiceRecoveryLife: true,
-                thubnail: true,
-                state: true,
-                userId: true,
-            }
-        });
-        if(!course){
-            res.status(404).json("Curso não existe"); 
-            return;
+async function verifyCourseAccess(req: Request, res: Response, prisma: PrismaClient): Promise<Course | null>{
+    const course = await prisma.course.findUnique({
+        where: {
+            id: Number(req.params.courseId)
+        },
+        select:{
+            id: true,
+            title: true,
+            maxLifes: true,
+            description: true,
+            secondsRecoveryLife: true,
+            practiceRecoveryLife: true,
+            thubnail: true,
+            state: true,
+            userId: true,
         }
-        if(course.userId != req.session.user!.id){
-            res.status(403).json("Acesso negado");
-            return;
-        }
-        req.course = course;
-        next();
+    });
+    if(!course){
+        res.status(404).json("Curso não existe"); 
+        return null;
     }
+    if(course.userId != req.session.user!.id){
+        res.status(403).json("Acesso negado");
+        return null;
+    }
+    return course;
 }
 
 export async function courses(app: Application, prisma: PrismaClient, storage: string) { 
@@ -137,9 +133,15 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.send(500).json(er);
         }
     })
-    app.get("/getCourseToEdit/:courseId", verifyCourseAccess(prisma), async (req: Request, res: Response) => { //rota para obter os níveis para a edição do minicurso
+    app.get("/getCourseToEdit/:courseId", requireLogin(prisma), async (req: Request, res: Response) => { //rota para obter os níveis para a edição do minicurso
         try{
-            const course = req.course!;
+            const course = await verifyCourseAccess(req, res, prisma);
+            if(course == null || course == undefined){
+                if(!res.headersSent){
+                    res.status(500).json("Erro crítico no servidor!");
+                }
+                return;
+            }
             const levels = await prisma.level.findMany({ //é normal obter valor nulo
                 select: {
                     type: true,
@@ -158,27 +160,67 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json("Erro interno no servidor");
         }
     });
-    app.post("/createLevel/:type/:courseId", verifyCourseAccess(prisma), async (req: Request, res: Response) => {
-        const lastLevel = await prisma.level.findFirst({
-            orderBy: {
-                order: 'desc'
-            },
-            where: {
-                courseId: Number(req.params.courseId)
+
+    app.post("/createLevel/:type/:courseId", requireLogin(prisma), async (req: Request, res: Response) => {
+        try{
+            const course = await verifyCourseAccess(req, res, prisma);
+            if(course == null || course == undefined){
+                if(!res.headersSent){
+                    res.status(500).json("Erro crítico no servidor!");
+                }
+                return;
             }
-        });
-        const level = await prisma.level.create({
-            data: {
-                type: 1,
-                recoveryLifes: 0,
-                order: lastLevel ? lastLevel.order+1 : 0,
-                courseId: req.session.user!.id
-            }
-        });
-        res.status(200).json(level);
+            const lastLevel = await prisma.level.findFirst({
+                orderBy: {
+                    order: 'desc'
+                },
+                where: {
+                    courseId: Number(req.params.courseId)
+                }
+            });
+            const level = await prisma.level.create({
+                data: {
+                    type: 1,
+                    recoveryLifes: 0,
+                    order: lastLevel ? lastLevel.order+1 : 0,
+                    courseId: req.session.user!.id
+                }
+            });
+            res.status(200).json(level);
+        }
+        catch(er){
+            res.status(500).json(er);
+        }
     });
-    app.get("/getleveltoedit", verifyCourseAccess(prisma), async (req: Request, res: Response)=>{
-        const course = req.course!;
+
+    app.get("/getleveltoedit/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
+        try{
+            const course = await verifyCourseAccess(req, res, prisma);
+            if(course == null || course == undefined){
+                if(!res.headersSent){
+                    res.status(500).json("Erro crítico no servidor!");
+                }
+                return;
+            }
+            const level = prisma.level.findFirst({
+                select: {
+                    id: true,
+                    content: true,
+                    courseId: true,
+                    recoveryLifes: true,
+                    type: true,
+                    order: true
+                },
+                where: {
+                    order: Number(req.params.order),
+                    courseId: course.id
+                }
+            });
+            res.status(200).json(level);
+        }
+        catch(er){
+            res.status(500).json(er);
+        }
         
     })
 }
