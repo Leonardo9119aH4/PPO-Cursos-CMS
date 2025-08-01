@@ -5,14 +5,7 @@ import Nav from '../../components/nav/nav';
 import Footer from '../../components/footer/footer';
 
 function Courses(){
-    const mountCourse = async () => {
-        return (
-            <div className='course'>
-                <img />
-                <h1></h1>
-            </div>
-        )
-    }
+    
     return (
         <>
             <Nav />

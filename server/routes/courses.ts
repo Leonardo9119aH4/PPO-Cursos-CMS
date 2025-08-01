@@ -193,16 +193,16 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
         }
     });
 
-    app.get("/getleveltoedit/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
+    app.get("/getleveltoedit/:courseId/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
         try{
-            const course = await verifyCourseAccess(req, res, prisma);
+            const course = await verifyCourseAccess(req, res, prisma); //interrompe o código caso uma resposta de erro já tenha sido enviada
             if(course == null || course == undefined){
-                if(!res.headersSent){
+                if(!res.headersSent){ //se entar aqui...
                     res.status(500).json("Erro crítico no servidor!");
                 }
                 return;
             }
-            const level = prisma.level.findFirst({
+            const level = await prisma.level.findFirst({
                 select: {
                     id: true,
                     content: true,
@@ -219,6 +219,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(200).json(level);
         }
         catch(er){
+            console.log(er);
             res.status(500).json(er);
         }
         

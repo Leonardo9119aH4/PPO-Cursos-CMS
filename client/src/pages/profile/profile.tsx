@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import editIcon from '../../assets/edit_icon.svg';
 import checkIcon from '../../assets/check_icon.svg';
 import closeIcon from '../../assets/close_icon.svg';
+import { Link } from 'react-router-dom';
 
 function Profile(){
     const navigate = useNavigate();
@@ -181,6 +182,7 @@ function Profile(){
                 <menu>
                     <a href="#welcome">Bem-vindo</a>
                     <a href="#accountInfo">Editar perfil</a>
+                    <Link to="/mycourses"><a>Meus cursos</a></Link>
                     <a href="#security">Segurança</a>
                     <button className="logoutButton" onClick={logOut}>Sair</button>
                 </menu>

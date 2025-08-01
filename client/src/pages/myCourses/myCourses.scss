@@ -19,6 +19,9 @@ div#mycourses{
                 align-items: flex-start;
                 margin-left: 5vw;
             }
+            & img{
+                max-height: 30vh;
+            }
         }
     }
 }

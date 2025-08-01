@@ -4,6 +4,7 @@ import Footer from '../../components/footer/footer';
 import api from '../../api';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function MyCourses(){
     const navigate = useNavigate();
@@ -60,10 +61,12 @@ function MyCourses(){
                                     <h1>{course.title}</h1>
                                     <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
                                     <p>{course.description}</p>
+                                    <Link to="/courseEditor">Editar curso</Link>
                                 </div> )
                             })}
                         </div>
                     </section>
+                    <Link to="/newCourse">Criar curso</Link>
                 </main>
             </div>
             <Footer />

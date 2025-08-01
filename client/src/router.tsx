@@ -24,7 +24,7 @@ function MainRoutes(){
             <Route path="/mycourses" element={<MyCourses />} />
             <Route path="/courseEditor/:courseId" element={<CourseEditor />} />
             <Route path="/newLevel/:courseId" element={<NewLevel />} />
-            <Route path="/theoryEditor/:levelId" element={<TheoryEditor />} />
+            <Route path="/theoryEditor/:courseId/:order" element={<TheoryEditor />} />
         </Routes>
     )
 }
