@@ -1,27 +1,36 @@
+@import '../../global.scss';
 div#mycourses{
     main{
         display: flex;
         flex-direction: column;
         margin-top: 5vh;
-        h1{
+        & h1{
             display: inline;
         }
-        section{
+        & section{
             background-color: blue;
             margin-bottom: 5vw;
-        }
-        section .courses{
-            display: flex;
-            flex-direction: row;
-            & div{
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            & .courses{
                 display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                margin-left: 5vw;
+                flex-direction: row;
+                & div{
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    margin-left: 5vw;
+                }
+                & img{
+                    max-height: 30vh;
+                }
             }
-            & img{
-                max-height: 30vh;
-            }
+        }
+        & #newCourse, .courseEditor{
+            @include gray-button;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            width: fit-content;
         }
     }
 }

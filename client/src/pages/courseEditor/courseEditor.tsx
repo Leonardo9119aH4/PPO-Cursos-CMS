@@ -3,7 +3,7 @@ import Footer from '../../components/footer/footer';
 import './courseEditor.scss';
 import { useState, useRef, useEffect } from 'react';
 import api from '../../api';
-import { useParams } from 'react-router';
+import { useParams, Link } from 'react-router';
 import { useNavigate } from 'react-router';
 import { Course, Level, CourseInfo } from '../../types';
 
@@ -12,6 +12,7 @@ function CourseEditor() {
     const {courseId} = useParams<{courseId: string}>();
     const [levels, setLevels] = useState<Level[]>([]);
     const [newLevelWindow, setNewLevelWindow] = useState<boolean>();
+    const [newQuizWindow, setNewQuizWindow] = useState<boolean>();
     useEffect(()=>{
         (async()=>{
             try{
@@ -27,8 +28,14 @@ function CourseEditor() {
         })();
     }, [courseId, navigate])
     const newTheory = async () => {
-        const level = await api.post(`/createLevel/q/${courseId}`);
-        navigate(`/theoryEditor/${level.data.order}`);
+        const level = await api.post(`/createLevel/0/${courseId}/0`);
+        navigate(`/theoryEditor/${courseId}/${level.data.order}`);
+    }
+    const newQuizPopup = () => {
+        setNewQuizWindow(true);
+    }
+    const newQuiz = async (lifesRecovery: number) => {
+        //const level = await api.post(`/createLevel/1/${courseId}/${lifesRecovery}`);
     }
     return (
         <>
@@ -42,7 +49,17 @@ function CourseEditor() {
                         ) : (
                             levels.map((level, idx) => (
                                 <li key={idx}>
-                                    <h1>A</h1>
+                                    <h1>{level.order}</h1>
+                                    {Number(level.type) == 0 ? ( //o Number() é porque o VS Code é burro e não quero falso erro
+                                        <><p>Nível teórico</p>
+                                        <Link to={`/theoryEditor/${courseId}/${level.order}`}>Editar</Link>
+                                        <button id="delete">D</button></>
+                                    ) : (
+                                        <><p>Nível quiz</p>
+                                        <p>Recupera {level.recoveryLifes} <button>E</button> vidas</p>
+                                        <Link to={`/quizEditor/${courseId}/${level.order}`}>Editar</Link>
+                                        <button id="delete">D</button></>
+                                    )}
                                 </li>
                             ))
                         )}
@@ -51,11 +68,17 @@ function CourseEditor() {
                         <div id="newLevelWindow">
                             <p>Selecione o tipo:</p>
                             <button onClick={() => newTheory()}>Nível teórico</button>
-                            <button onClick={() => navigate("/")}>Nível prático</button>
+                            <button onClick={() => newQuiz}>Nível quiz</button>
                             <button onClick={() => setNewLevelWindow(false)}>Cancelar</button>
                         </div>
                     ) : (
                         <button onClick={() => setNewLevelWindow(true)}>+</button>
+                    )}
+                    {newQuizWindow && (
+                        <>
+                            <input />
+                            <button>Criar</button>
+                        </>
                     )}
                 </main>
             </div>

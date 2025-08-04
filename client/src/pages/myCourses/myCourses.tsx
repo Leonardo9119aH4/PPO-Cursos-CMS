@@ -61,12 +61,12 @@ function MyCourses(){
                                     <h1>{course.title}</h1>
                                     <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
                                     <p>{course.description}</p>
-                                    <Link to="/courseEditor">Editar curso</Link>
+                                    <Link className='courseEditor' to={`/courseEditor/${course.id}`} >Editar curso</Link>
                                 </div> )
                             })}
                         </div>
                     </section>
-                    <Link to="/newCourse">Criar curso</Link>
+                    <Link id="newCourse" to="/newCourse">Criar curso</Link>
                 </main>
             </div>
             <Footer />

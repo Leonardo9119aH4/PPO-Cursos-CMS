@@ -161,7 +161,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
         }
     });
 
-    app.post("/createLevel/:type/:courseId", requireLogin(prisma), async (req: Request, res: Response) => {
+    app.post("/createLevel/:type/:courseId/:recoveryLifes", requireLogin(prisma), async (req: Request, res: Response) => {
         try{
             const course = await verifyCourseAccess(req, res, prisma);
             if(course == null || course == undefined){
@@ -180,7 +180,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             });
             const level = await prisma.level.create({
                 data: {
-                    type: 1,
+                    type: Number(req.params.type),
                     recoveryLifes: 0,
                     order: lastLevel ? lastLevel.order+1 : 0,
                     courseId: req.session.user!.id
@@ -197,7 +197,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
         try{
             const course = await verifyCourseAccess(req, res, prisma); //interrompe o código caso uma resposta de erro já tenha sido enviada
             if(course == null || course == undefined){
-                if(!res.headersSent){ //se entar aqui...
+                if(!res.headersSent){ //se entrar aqui...
                     res.status(500).json("Erro crítico no servidor!");
                 }
                 return;

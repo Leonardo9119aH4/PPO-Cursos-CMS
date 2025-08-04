@@ -1,0 +1,35 @@
+@import "../../global.scss";
+$mainHeight: 80vh;
+#theory-editor{
+    header{
+        display: flex;
+        justify-content: space-between;
+        & p, div{
+            font-size: 3rem;
+            margin-top: 2rem;
+            text-decoration: none;
+            & a{ /* Link */
+                text-decoration: none;
+                color: black;
+                &:hover{
+                    color: orange;
+                }
+            }
+        }
+    }
+    main{
+        margin: 3rem;
+        background-color: lightgray;
+        padding: 1rem;
+        height: $mainHeight;
+        border-radius: 1rem;
+        & .ProseMirror { /* EditorContent */
+            background-color: white;
+            @include centralizeColumm;
+            & p{
+                border: none;
+                height: 0.8*$mainHeight;
+            }
+        }
+    }
+}

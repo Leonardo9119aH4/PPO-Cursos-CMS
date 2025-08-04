@@ -16,8 +16,9 @@ html, body, #root{
     background-color: gray;
     color: black;
     cursor: pointer;
-    padding: 0.2rem;
-    :hover{
+    padding: 0.35rem;
+    border-radius: 0.5rem;
+    &:hover{
         background-color: darkgray;
         color: orangered;
     }
