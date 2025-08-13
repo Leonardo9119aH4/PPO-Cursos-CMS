@@ -1,12 +1,3 @@
-export interface CourseInfo {
-    id: number;
-    title: string;
-    maxLifes: number;
-    timeRecoveryLife: string;
-    practiceRecoveryLife: number;
-    userId: number;
-}
-
 export interface Level {
     type: string;
     content: object;
@@ -16,6 +7,18 @@ export interface Level {
 }
 
 export interface Course {
-    courseInfo: CourseInfo;
+    id: number;
+    title: string;
+    maxLifes: number;
+    description: string | undefined;
+    secondsRecoveryLife: number;
+    practiceRecoveryLife: number;
+    thubnail: string;
+    state: number;
+    userId: number;
+    [key: string]: any;
     levels: Level[];
 }
+
+
+

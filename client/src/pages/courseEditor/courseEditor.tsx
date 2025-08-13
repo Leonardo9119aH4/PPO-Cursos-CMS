@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import api from '../../api';
 import { useParams, Link } from 'react-router';
 import { useNavigate } from 'react-router';
-import { Course, Level, CourseInfo } from '../../types';
+import { Course, Level } from '../../types';
 
 function CourseEditor() {
     const navigate = useNavigate();
@@ -13,6 +13,7 @@ function CourseEditor() {
     const [levels, setLevels] = useState<Level[]>([]);
     const [newLevelWindow, setNewLevelWindow] = useState<boolean>();
     const [newQuizWindow, setNewQuizWindow] = useState<boolean>();
+    const [quizLifes, setQuizLifes] = useState<number>(1);
     useEffect(()=>{
         (async()=>{
             try{
@@ -35,7 +36,8 @@ function CourseEditor() {
         setNewQuizWindow(true);
     }
     const newQuiz = async (lifesRecovery: number) => {
-        //const level = await api.post(`/createLevel/1/${courseId}/${lifesRecovery}`);
+        const level = await api.post(`/createLevel/1/${courseId}/${lifesRecovery}`);
+        navigate(`/theoryEditor/${courseId}/${level.data.order}`);
     }
     return (
         <>
@@ -68,7 +70,7 @@ function CourseEditor() {
                         <div id="newLevelWindow">
                             <p>Selecione o tipo:</p>
                             <button onClick={() => newTheory()}>Nível teórico</button>
-                            <button onClick={() => newQuiz}>Nível quiz</button>
+                            <button onClick={() => setNewQuizWindow(true)}>Nível quiz</button>
                             <button onClick={() => setNewLevelWindow(false)}>Cancelar</button>
                         </div>
                     ) : (
@@ -76,8 +78,13 @@ function CourseEditor() {
                     )}
                     {newQuizWindow && (
                         <>
-                            <input />
-                            <button>Criar</button>
+                            <input 
+                                type="number"
+                                value={quizLifes}
+                                onChange={e => setQuizLifes(Number(e.target.value))}
+                            />
+                            <p>Completar o nível recupera quantas vidas?</p>
+                            <button onClick={() => newQuiz(quizLifes)}>Criar</button>
                         </>
                     )}
                 </main>

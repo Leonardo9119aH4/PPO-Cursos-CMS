@@ -5,6 +5,7 @@ import api from '../../api';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import CoursesCarousel from '../../components/CoursesCarousel/CoursesCarousel';
 
 function MyCourses(){
     const navigate = useNavigate();
@@ -29,43 +30,27 @@ function MyCourses(){
             <Nav />
             <div id="mycourses">
                 <main>
-                    <section id="public">
-                        <h1>Públicos</h1>
-                        <div className='courses'>
-                            {courses.filter(c => c.state === 1).map(course => {
-                                return ( <div key={course.id}>
-                                    <h1>{course.title}</h1>
-                                    <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
-                                    <p>{course.description}</p>
-                                </div> )
-                            })}
-                        </div>
-                    </section>
-                    <section id="private">
-                        <h1>Privados</h1>
-                        <div className='courses'>
-                            {courses.filter(c => c.state === 2).map(course => {
-                                return ( <div key={course.id}>
-                                    <h1>{course.title}</h1>
-                                    <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
-                                    <p>{course.description}</p>
-                                </div> )
-                            })}
-                        </div>
-                    </section>
-                    <section id="incomplete">
-                        <h1>Incompletos</h1>
-                        <div className='courses'>
-                            {courses.filter(c => c.state === 0).map(course => {
-                                return ( <div key={course.id}>
-                                    <h1>{course.title}</h1>
-                                    <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
-                                    <p>{course.description}</p>
-                                    <Link className='courseEditor' to={`/courseEditor/${course.id}`} >Editar curso</Link>
-                                </div> )
-                            })}
-                        </div>
-                    </section>
+                    <CoursesCarousel
+                        title="Públicos"
+                        courses={courses.filter(c => c.state === 1)}
+                        renderActions={course => (
+                            <Link className='courseEditor' to={`/courseEditor/${course.id}`}>Editar curso</Link>
+                        )}
+                    />
+                    <CoursesCarousel
+                        title="Privados"
+                        courses={courses.filter(c => c.state === 2)}
+                        renderActions={course => (
+                            <Link className='courseEditor' to={`/courseEditor/${course.id}`}>Editar curso</Link>
+                        )}
+                    />
+                    <CoursesCarousel
+                        title="Incompletos"
+                        courses={courses.filter(c => c.state === 0)}
+                        renderActions={course => (
+                            <Link className='courseEditor' to={`/courseEditor/${course.id}`}>Editar curso</Link>
+                        )}
+                    />
                     <Link id="newCourse" to="/newCourse">Criar curso</Link>
                 </main>
             </div>

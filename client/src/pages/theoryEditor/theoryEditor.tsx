@@ -1,25 +1,26 @@
 import "./theoryEditor.scss";
 import Nav from "../../components/nav/nav";
 import Footer from "../../components/footer/footer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import api from "../../api";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Level } from "../../types";
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { FontSize, TextStyle } from "@tiptap/extension-text-style";
+import RichTextEditor from "../../components/rtEditor/RichTextEditor";
 
 function TheoryEditor() {
     const {courseId, order} = useParams<{courseId: string; order: string}>();
+    const [textContent, setTextContent] = useState<any>(()=>{
+        const saved = localStorage.getItem(`theoryEditorContent-${courseId}-${order}`);
+        return saved ? JSON.parse(saved) : null;
+    });
     const navigate = useNavigate();
-    const editor = useEditor({
-        extensions: [
-            StarterKit,
-            TextStyle,
-            FontSize
-        ],
-        content: "Insira o seu texto aqui..."
-    })
+    const richTextExport = () => {
+        console.log(textContent);
+    }
+
     useEffect(()=>{
         (async()=>{
             try{
@@ -42,10 +43,19 @@ function TheoryEditor() {
                 }
             }
         })();
-    });
-    const setFontSize = (size: string) => {
-        editor?.chain().focus().setFontSize(size).run();
-    };
+    }, [courseId, order, navigate]);
+    useEffect(() => {
+        if (courseId && order) {
+            const saved = localStorage.getItem(`theoryEditorContent-${courseId}-${order}`);
+            if (saved) setTextContent(JSON.parse(saved));
+        }
+    }, [courseId, order]);
+    useEffect(() => {
+        if (textContent && courseId && order) {
+            localStorage.setItem(`theoryEditorContent-${courseId}-${order}`, JSON.stringify(textContent));
+        }
+    }, [textContent, courseId, order]);
+
     return (
         <>
             <Nav />
@@ -55,33 +65,8 @@ function TheoryEditor() {
                     <p>Nível teórico</p> {/* Melhorar (prequiça é osso) */}
                 </header>
                 <main>
-                    <div className="toolbar">
-                        <button
-                            onClick={() => editor?.chain().focus().toggleBold().run()}
-                            className={editor?.isActive('bold') ? 'is-active' : ''}
-                            type="button"
-                        >
-                            <b>B</b>
-                        </button>
-                        <button
-                            onClick={() => editor?.chain().focus().toggleItalic().run()}
-                            className={editor?.isActive('italic') ? 'is-active' : ''}
-                            type="button"
-                        >
-                            <i>I</i>
-                        </button>
-                        <select
-                            onChange={e => setFontSize(e.target.value)}
-                            value={editor?.getAttributes('textStyle').fontSize || '16px'}
-                        >
-                            <option value="12px">12</option>
-                            <option value="16px">16</option>
-                            <option value="20px">20</option>
-                            <option value="24px">24</option>
-                            <option value="32px">32</option>
-                        </select>
-                    </div>
-                    <EditorContent editor={editor} />
+                    <RichTextEditor value={textContent} onChange={setTextContent} />
+                    <button onClick={()=>richTextExport()}>Salvar</button>
                 </main>
             </div>
             <Footer />

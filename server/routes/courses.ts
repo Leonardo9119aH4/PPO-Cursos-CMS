@@ -183,7 +183,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
                     type: Number(req.params.type),
                     recoveryLifes: 0,
                     order: lastLevel ? lastLevel.order+1 : 0,
-                    courseId: req.session.user!.id
+                    courseId: course.id
                 }
             });
             res.status(200).json(level);

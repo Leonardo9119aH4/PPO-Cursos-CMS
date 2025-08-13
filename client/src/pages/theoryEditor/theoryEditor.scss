@@ -25,10 +25,11 @@ $mainHeight: 80vh;
         border-radius: 1rem;
         & .ProseMirror { /* EditorContent */
             background-color: white;
-            @include centralizeColumm;
+            min-height: $mainHeight*0.8;
+            //@include centralizeColumm;
             & p{
                 border: none;
-                height: 0.8*$mainHeight;
+                height: auto;
             }
         }
     }
