@@ -12,27 +12,46 @@ import RichTextEditor from "../../components/rtEditor/RichTextEditor";
 
 function TheoryEditor() {
     const {courseId, order} = useParams<{courseId: string; order: string}>();
-    const [textContent, setTextContent] = useState<any>(()=>{
-        const saved = localStorage.getItem(`theoryEditorContent-${courseId}-${order}`);
-        return saved ? JSON.parse(saved) : null;
-    });
+    const [textContent, setTextContent] = useState<any>();
     const navigate = useNavigate();
-    const richTextExport = () => {
-        console.log(textContent);
+    const saveTheoryRemote = () => {
+        try{
+            api.post(`/saveTheory/${courseId}/${order}`, textContent);
+        }
+        catch(er){
+
+        }
+    }
+    const getTheoryRemote = async () => {
+        try{
+            const level = await api.get<Level>(`/getleveltoedit/${courseId}/${order}`);
+            localStorage.setItem(`theoryEditorContent-${courseId}-${order}`, JSON.stringify(level.data.content));
+            setTextContent(level.data.content);
+
+        }
+        catch(er){
+
+        }
     }
 
     useEffect(()=>{
         (async()=>{
             try{
                 const level = await api.get<Level>(`/getleveltoedit/${courseId}/${order}`);
-                console.log(level.data)
-               if(level.data == null || level.data == undefined){
+                if(level.data == null || level.data == undefined){
                     navigate(`/courseEditor/${courseId}`);
-               }
+                }
                 if(Number(level.data.type) == 1){ //VS Code burro
                     navigate(`/quizEditor/${courseId}/${order}`);
                 }
-                console.log(level.data)
+                const saved = localStorage.getItem(`theoryEditorContent-${courseId}-${order}`);
+                if(saved){
+                    setTextContent(JSON.parse(saved));
+                }
+                else{
+                    localStorage.setItem(`theoryEditorContent-${courseId}-${order}`, JSON.stringify(level.data.content));
+                    setTextContent(level.data.content);
+                }
             }
             catch(er: any){
                 if(er.response.status == 401){
@@ -44,14 +63,8 @@ function TheoryEditor() {
             }
         })();
     }, [courseId, order, navigate]);
-    useEffect(() => {
-        if (courseId && order) {
-            const saved = localStorage.getItem(`theoryEditorContent-${courseId}-${order}`);
-            if (saved) setTextContent(JSON.parse(saved));
-        }
-    }, [courseId, order]);
-    useEffect(() => {
-        if (textContent && courseId && order) {
+    useEffect(() => { // Detecta as alterações feitas pelo usuário e a salva no localstorage
+        if(textContent && courseId && order) {
             localStorage.setItem(`theoryEditorContent-${courseId}-${order}`, JSON.stringify(textContent));
         }
     }, [textContent, courseId, order]);
@@ -66,7 +79,8 @@ function TheoryEditor() {
                 </header>
                 <main>
                     <RichTextEditor value={textContent} onChange={setTextContent} />
-                    <button onClick={()=>richTextExport()}>Salvar</button>
+                    <button onClick={()=>getTheoryRemote()}>Carregar da nuvem</button>
+                    <button onClick={()=>saveTheoryRemote()}>Salvar na nuvem</button>
                 </main>
             </div>
             <Footer />

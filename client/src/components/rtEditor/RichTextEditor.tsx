@@ -3,6 +3,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { TextStyle } from "@tiptap/extension-text-style";
 import FontSize from "@tiptap/extension-font-size";
+import { useEffect } from "react";
 
 interface RichTextEditorProps {
   value?: any;
@@ -27,6 +28,15 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange, placeh
   const setFontSize = (size: string) => {
     editor?.chain().focus().setFontSize(size).run();
   };
+
+  useEffect(() => { // Garante que o editor reaja a alterações externas de seu conteúdo
+    if (editor && value) {
+        // Só atualiza se o conteúdo for diferente
+        if (JSON.stringify(editor.getJSON()) !== JSON.stringify(value)) {
+            editor.commands.setContent(value);
+        }
+    }
+  }, [value, editor]);
 
   return (
     <div className="rich-text-editor">

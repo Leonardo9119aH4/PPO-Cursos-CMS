@@ -1,4 +1,4 @@
-import { PrismaClient, Course } from "@prisma/client";
+import { PrismaClient, Course, Level } from "@prisma/client";
 import { Application, NextFunction, Request, Response } from "express";
 import multer, { MulterError } from "multer";
 import { getUsers, requireLogin, users }  from "./users";
@@ -52,6 +52,31 @@ async function verifyCourseAccess(req: Request, res: Response, prisma: PrismaCli
         return null;
     }
     return course;
+}
+
+async function verifyLevelAccess(req: Request, res: Response, prisma: PrismaClient): Promise<Level | null>{
+    const course = await verifyCourseAccess(req, res, prisma); // Se o usuário não possuir acesso, essa função já devolve a resposta de erro ao cliente
+    if(!course){
+        return null;
+    }
+    const level = await prisma.level.findFirst({
+        select: {
+            id: true,
+            content: true,
+            courseId: true,
+            recoveryLifes: true,
+            type: true,
+            order: true
+        },
+        where: {
+            order: Number(req.params.order),
+            courseId: course.id
+        }
+    });
+    if(level == null){
+        res.status(404).json("Nível não encontrado");
+    }
+    return level;
 }
 
 export async function courses(app: Application, prisma: PrismaClient, storage: string) { 
@@ -195,27 +220,13 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
 
     app.get("/getleveltoedit/:courseId/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
         try{
-            const course = await verifyCourseAccess(req, res, prisma); //interrompe o código caso uma resposta de erro já tenha sido enviada
-            if(course == null || course == undefined){
+            const level = await verifyLevelAccess(req, res, prisma);
+            if(level == null || level == undefined){
                 if(!res.headersSent){ //se entrar aqui...
                     res.status(500).json("Erro crítico no servidor!");
                 }
                 return;
             }
-            const level = await prisma.level.findFirst({
-                select: {
-                    id: true,
-                    content: true,
-                    courseId: true,
-                    recoveryLifes: true,
-                    type: true,
-                    order: true
-                },
-                where: {
-                    order: Number(req.params.order),
-                    courseId: course.id
-                }
-            });
             res.status(200).json(level);
         }
         catch(er){
@@ -223,5 +234,24 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json(er);
         }
         
+    });
+
+    app.post("/saveTheory/:courseId/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
+        try{
+            const level = await verifyLevelAccess(req, res, prisma); // Se não tiver, já envia a resposta de erro
+            await prisma.level.update({
+                where: {
+                    id: level!.id
+                },
+                data: {
+                    content: req.body
+                }
+            });
+            res.sendStatus(200);
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
     })
 }
