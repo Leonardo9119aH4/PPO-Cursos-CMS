@@ -9,6 +9,7 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { FontSize, TextStyle } from "@tiptap/extension-text-style";
 import RichTextEditor from "../../components/rtEditor/RichTextEditor";
+import SideLevels from "../../components/sideLevels/sideLevels";
 
 function TheoryEditor() {
     const {courseId, order} = useParams<{courseId: string; order: string}>();
@@ -74,8 +75,7 @@ function TheoryEditor() {
             <Nav />
             <div id="theory-editor">
                 <header>
-                    <div id="sideLevels"><Link to={`/theoryEditor/${courseId}/${Number(order) - 1}`}>←</Link>Nível {order}<Link to={`/theoryEditor/${courseId}/${Number(order) + 1}`}>→</Link></div> 
-                    <p>Nível teórico</p> {/* Melhorar (prequiça é osso) */}
+                    <SideLevels courseId={courseId} order={order} type="Nível teórico" />
                 </header>
                 <main>
                     <RichTextEditor value={textContent} onChange={setTextContent} />

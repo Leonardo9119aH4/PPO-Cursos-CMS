@@ -4,18 +4,6 @@ $mainHeight: 80vh;
     header{
         display: flex;
         justify-content: space-between;
-        & p, div{
-            font-size: 3rem;
-            margin-top: 2rem;
-            text-decoration: none;
-            & a{ /* Link */
-                text-decoration: none;
-                color: black;
-                &:hover{
-                    color: orange;
-                }
-            }
-        }
     }
     main{
         margin: 3rem;
