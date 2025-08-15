@@ -1,4 +1,5 @@
 export interface Level {
+    id: number,
     type: string;
     content: object;
     recoveryLifes: number;
@@ -20,5 +21,10 @@ export interface Course {
     levels: Level[];
 }
 
+export interface Question {
+    enunciation: string,
+    alternatives: string[],
+    answer: number
+}
 
 
