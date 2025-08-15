@@ -24,7 +24,8 @@ export interface Course {
 export interface Question {
     enunciation: string,
     alternatives: string[],
-    answer: number
+    answer: number,
+    penalization: number
 }
 
 
