@@ -8,18 +8,26 @@ import { useNavigate } from 'react-router';
 import { Course, Level } from '../../types';
 
 function CourseEditor() {
+    interface LevelHook extends Level{
+        editRecoveryLevel: boolean;
+    }
     const navigate = useNavigate();
     const {courseId} = useParams<{courseId: string}>();
-    const [levels, setLevels] = useState<Level[]>([]);
+    const [levels, setLevels] = useState<LevelHook[]>([]);
     const [newLevelWindow, setNewLevelWindow] = useState<boolean>();
     const [newQuizWindow, setNewQuizWindow] = useState<boolean>();
     const [quizLifes, setQuizLifes] = useState<number>(1);
+    const recoveryLifesInputRef = useRef<HTMLInputElement>(null);
+
     useEffect(()=>{
         (async()=>{
             try{
                 const info = await api.get<Course>(`/getCourseToEdit/${courseId}`);
-                console.log(info.data)
-                setLevels(info.data.levels);
+                const levels: LevelHook[] = info.data.levels.map(level => ({
+                    ...level,
+                    editRecoveryLevel: false
+                }));
+                setLevels(levels);
             }
             catch(er: any){
                 if(er.response.status == 401){
@@ -39,6 +47,27 @@ function CourseEditor() {
         const level = await api.post(`/createLevel/1/${courseId}/${lifesRecovery}`);
         navigate(`/theoryEditor/${courseId}/${level.data.order}`);
     }
+    const deleteLevel = (level: number)=>{
+        api.delete(`/deleteLevel/${courseId}/${level}`).catch(er=>{
+            console.log(er.response.data);
+        });
+        setLevels(prev => prev.filter((_, i) => i !== level));
+    }
+    const recoveryLifesSetEditMode = (level: number) => {
+        setLevels(prev =>
+            prev.map((l, i) =>
+                i === level ? { ...l, editRecoveryLevel: true } : l
+            )
+        );
+    };
+    const recoveryLifesSave = (level: number)=>{
+
+        setLevels(prev =>
+            prev.map((l, i) =>
+                i === level ? { ...l, editRecoveryLevel: false } : l
+            )
+        );
+    }
     return (
         <>
             <Nav />
@@ -55,12 +84,16 @@ function CourseEditor() {
                                     {Number(level.type) == 0 ? ( //o Number() é porque o VS Code é burro e não quero falso erro
                                         <><p>Nível teórico</p>
                                         <Link to={`/theoryEditor/${courseId}/${level.order}`}>Editar</Link>
-                                        <button id="delete">D</button></>
+                                        <button onClick={()=>deleteLevel(idx)} id="delete">D</button></>
                                     ) : (
                                         <><p>Nível quiz</p>
-                                        <p>Recupera {level.recoveryLifes} <button>E</button> vidas</p>
+                                        <p>Recupera { level.editRecoveryLevel ? (
+                                            <><input className="recovery-lifes-input" /><button onClick={()=>recoveryLifesSave(idx)}>C</button></>
+                                        ) : (
+                                            <>{level.recoveryLifes} <button onClick={()=>recoveryLifesSetEditMode(idx)}>E</button></>
+                                        )} vidas</p>
                                         <Link to={`/quizEditor/${courseId}/${level.order}`}>Editar</Link>
-                                        <button id="delete">D</button></>
+                                        <button onClick={()=>deleteLevel(idx)} id="delete">D</button></>
                                     )}
                                 </li>
                             ))

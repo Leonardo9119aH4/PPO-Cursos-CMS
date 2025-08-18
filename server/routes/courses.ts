@@ -236,7 +236,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
         
     });
 
-    app.post("/saveTheory/:courseId/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
+    app.post("/saveLevel/:courseId/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
         try{
             const level = await verifyLevelAccess(req, res, prisma); // Se não tiver, já envia a resposta de erro
             await prisma.level.update({
@@ -253,5 +253,33 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             console.log(er);
             res.status(500).json(er);
         }
-    })
+    });
+
+    app.delete("/deleteLevel/:courseId/:order", requireLogin(prisma), async(req: Request, res: Response)=>{
+        try{
+            const level = await verifyLevelAccess(req, res, prisma);
+            await prisma.level.updateMany({
+                where: {
+                    courseId: Number(req.params.courseId),
+                    order: { gt: Number(req.params.order )}
+                },
+                data: {
+                    order: { decrement: 1}
+                }
+            });
+            await prisma.level.delete({
+                where: {
+                    id: level!.id
+                }
+            });
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
+    });
+
+    app.post("/updateLevel/:courseId/:order", requireLogin(prisma), async(req: Request, res: Response)=>{
+
+    });
 }

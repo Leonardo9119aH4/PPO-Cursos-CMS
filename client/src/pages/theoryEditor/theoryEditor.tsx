@@ -17,7 +17,7 @@ function TheoryEditor() {
     const navigate = useNavigate();
     const saveTheoryRemote = () => {
         try{
-            api.post(`/saveTheory/${courseId}/${order}`, textContent);
+            api.post(`/saveLevel/${courseId}/${order}`, textContent);
         }
         catch(er){
 

@@ -1,3 +1,8 @@
+@import '../../global.scss';
+#quiz-editor {
+    min-height: 100vh;
+    background: #fff;
+    font-family: Arial, sans-serif;
     .respose {
         display: flex;
         align-items: center;
@@ -25,12 +30,6 @@
             flex-shrink: 0;
         }
     }
-@import '../../global.scss';
-#quiz-editor {
-    min-height: 100vh;
-    background: #fff;
-    font-family: Arial, sans-serif;
-
     header {
         display: flex;
         justify-content: space-between;
