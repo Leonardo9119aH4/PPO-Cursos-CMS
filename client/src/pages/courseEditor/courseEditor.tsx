@@ -61,12 +61,24 @@ function CourseEditor() {
         );
     };
     const recoveryLifesSave = (level: number)=>{
-
-        setLevels(prev =>
-            prev.map((l, i) =>
-                i === level ? { ...l, editRecoveryLevel: false } : l
+        const value = Number(recoveryLifesInputRef.current?.value);
+        if(value){
+            api.post(`/updateLevel/${courseId}/${level}`, {recoveryLifes: value});
+            setLevels(prev =>
+                prev.map((l, i) =>
+                    i === level
+                        ? { ...l, recoveryLifes: value, editRecoveryLevel: false }
+                        : l
+                )
             )
-        );
+        }
+        else{
+            setLevels(prev =>
+                prev.map((l, i) =>
+                    i === level ? { ...l, editRecoveryLevel: false } : l
+                )
+            );
+        }
     }
     return (
         <>
@@ -88,7 +100,7 @@ function CourseEditor() {
                                     ) : (
                                         <><p>Nível quiz</p>
                                         <p>Recupera { level.editRecoveryLevel ? (
-                                            <><input className="recovery-lifes-input" /><button onClick={()=>recoveryLifesSave(idx)}>C</button></>
+                                            <><input className="recovery-lifes-input" ref={recoveryLifesInputRef} /><button onClick={()=>recoveryLifesSave(idx)}>C</button></>
                                         ) : (
                                             <>{level.recoveryLifes} <button onClick={()=>recoveryLifesSetEditMode(idx)}>E</button></>
                                         )} vidas</p>

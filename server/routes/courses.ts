@@ -258,6 +258,9 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
     app.delete("/deleteLevel/:courseId/:order", requireLogin(prisma), async(req: Request, res: Response)=>{
         try{
             const level = await verifyLevelAccess(req, res, prisma);
+            if(level == null){
+                return;
+            }
             await prisma.level.updateMany({
                 where: {
                     courseId: Number(req.params.courseId),
@@ -269,7 +272,7 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             });
             await prisma.level.delete({
                 where: {
-                    id: level!.id
+                    id: level.id
                 }
             });
         }
@@ -280,6 +283,23 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
     });
 
     app.post("/updateLevel/:courseId/:order", requireLogin(prisma), async(req: Request, res: Response)=>{
-
+        try{
+            const level = await verifyLevelAccess(req, res, prisma);
+            if(level == null){
+                return;
+            }
+            await prisma.level.update({
+                data: {
+                    recoveryLifes: Number(req.body.recoveryLifes)
+                },
+                where: {
+                    id: level.id
+                }
+            });
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
     });
 }
