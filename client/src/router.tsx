@@ -11,6 +11,7 @@ import MyCourses from "./pages/myCourses/myCourses";
 import NewLevel from "./pages/newLevel/newLevel";
 import TheoryEditor from "./pages/theoryEditor/theoryEditor";
 import QuizEditor from "./pages/quizEditor/quizEditor";
+import PlayLevels from "./pages/playLevels/playLevels";
 
 function MainRoutes(){
     return (
@@ -27,6 +28,7 @@ function MainRoutes(){
             <Route path="/newLevel/:courseId" element={<NewLevel />} />
             <Route path="/theoryEditor/:courseId/:order" element={<TheoryEditor />} />
             <Route path="/quizEditor/:courseId/:order" element={<QuizEditor />} />
+            <Route path="/playLevels/:courseId" element={<PlayLevels/>} />
         </Routes>
     )
 }

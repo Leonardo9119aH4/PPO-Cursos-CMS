@@ -5,12 +5,13 @@ import Nav from '../../components/nav/nav';
 import Footer from '../../components/footer/footer';
 import CoursesCarousel from '../../components/CoursesCarousel/CoursesCarousel';
 import { Link } from 'react-router-dom';
+import { Course } from '../../types';
 
 function Courses(){
     const [courses, setCourses] = useState<any[]>([]);
     useEffect(()=>{
         (async()=>{
-            const courses = await api.get("/getcourses");
+            const courses = await api.get<Course[]>("/getcourses");
             setCourses(courses.data);
         })();
     }, []);
@@ -20,7 +21,7 @@ function Courses(){
             <div id="courses">
                 <main>
                     <CoursesCarousel title="Em destaque" courses={courses} renderActions={course=>(
-                        <Link className='courseEditor' to={`/`}>Jogar</Link>
+                        <Link className='courseEditor' to={`/playLevels/${course.id}`}>Jogar</Link>
                     )}/>
                 </main>
             </div>
