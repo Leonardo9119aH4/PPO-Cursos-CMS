@@ -10,15 +10,80 @@
 		margin-bottom: 2rem;
 	}
 	main {
-		max-width: 700px;
+		max-width: 900px;
+		margin: 0 auto;
+		display: flex;
+		gap: 2rem;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		justify-content: center;
+	}
+	.levels-view {
+		flex: 1 1 350px;
+		min-width: 320px;
+	}
+	.edit-course {
+		flex: 1 1 350px;
+		min-width: 320px;
+		display: flex;
+		justify-content: center;
+	}
+	.edit-course form {
+		background: #d3d3d3;
+		border-radius: 2rem;
+		padding: 2rem 2.5rem 1.5rem 2.5rem;
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+		width: 100%;
+		max-width: 350px;
 		margin: 0 auto;
 	}
-	h1 {
-		font-size: 2rem;
-		margin-bottom: 1.5rem;
-		font-weight: bold;
-		text-align: left;
+	.edit-course label {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 1.1rem;
+		font-size: 1.1rem;
 	}
+	.edit-course p {
+		margin: 0 0 0.3rem 0;
+		font-size: 1.1rem;
+		font-weight: 500;
+	}
+	.edit-course input[type="text"],
+	.edit-course input[type="number"],
+	.edit-course input[type="file"] {
+		padding: 0.5rem 0.7rem;
+		border: none;
+		border-radius: 6px;
+		font-size: 1.1rem;
+		margin-bottom: 0.5rem;
+		font-family: inherit;
+		background: #fff;
+		box-sizing: border-box;
+	}
+	.edit-course input[type="file"] {
+		background: transparent;
+		padding: 0;
+		margin-bottom: 0.7rem;
+	}
+	.edit-course button[type="submit"] {
+		@include gray-button;
+		width: 100%;
+		font-size: 1.1rem;
+		border-radius: 12px;
+		margin-top: 0.7rem;
+		font-weight: bold;
+		letter-spacing: 1px;
+		background: #888;
+		color: #fff;
+		transition: background 0.2s;
+		&:hover {
+			background: #666;
+		}
+	}
+	// ...existing code for levels, newLevelWindow, etc...
 	ul {
 		list-style: none;
 		padding: 0;

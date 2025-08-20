@@ -17,6 +17,7 @@ function CourseEditor() {
     const [newLevelWindow, setNewLevelWindow] = useState<boolean>();
     const [newQuizWindow, setNewQuizWindow] = useState<boolean>();
     const [quizLifes, setQuizLifes] = useState<number>(1);
+    const [forms, setForms] = useState<Course>();
     const recoveryLifesInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(()=>{
@@ -28,6 +29,7 @@ function CourseEditor() {
                     editRecoveryLevel: false
                 }));
                 setLevels(levels);
+                setForms(info.data);
             }
             catch(er: any){
                 if(er.response.status == 401){
@@ -80,58 +82,105 @@ function CourseEditor() {
             );
         }
     }
+    const updateCourse = async(ev: React.FormEvent)=>{
+        ev.preventDefault();
+        try{
+            const formData = new FormData(ev.target as HTMLFormElement);
+            const courseResponse = await api.post("/updatecourse", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
+            });
+            console.log(courseResponse);
+        }
+        catch(er: any){
+            console.log(er.response.data);
+        }
+    }
     return (
         <>
             <Nav />
             <div id="course-editor">
                 <main>
-                    <h1>Níveis</h1>
-                    <ul>
-                        {levels.length === 0 ? (
-                            <h1>Não há níveis criados.</h1>
-                        ) : (
-                            levels.map((level, idx) => (
-                                <li key={idx}>
-                                    <h1>{level.order}</h1>
-                                    {Number(level.type) == 0 ? ( //o Number() é porque o VS Code é burro e não quero falso erro
-                                        <><p>Nível teórico</p>
-                                        <Link to={`/theoryEditor/${courseId}/${level.order}`}>Editar</Link>
-                                        <button onClick={()=>deleteLevel(idx)} id="delete">D</button></>
-                                    ) : (
-                                        <><p>Nível quiz</p>
-                                        <p>Recupera { level.editRecoveryLevel ? (
-                                            <><input className="recovery-lifes-input" ref={recoveryLifesInputRef} /><button onClick={()=>recoveryLifesSave(idx)}>C</button></>
+                    <div className='levels-view'>
+                        <h1>Níveis</h1>
+                        <ul>
+                            {levels.length === 0 ? (
+                                <h1>Não há níveis criados.</h1>
+                            ) : (
+                                levels.map((level, idx) => (
+                                    <li key={idx}>
+                                        <h1>{level.order}</h1>
+                                        {Number(level.type) == 0 ? ( //o Number() é porque o VS Code é burro e não quero falso erro
+                                            <><p>Nível teórico</p>
+                                            <Link to={`/theoryEditor/${courseId}/${level.order}`}>Editar</Link>
+                                            <button onClick={()=>deleteLevel(idx)} id="delete">D</button></>
                                         ) : (
-                                            <>{level.recoveryLifes} <button onClick={()=>recoveryLifesSetEditMode(idx)}>E</button></>
-                                        )} vidas</p>
-                                        <Link to={`/quizEditor/${courseId}/${level.order}`}>Editar</Link>
-                                        <button onClick={()=>deleteLevel(idx)} id="delete">D</button></>
-                                    )}
-                                </li>
-                            ))
+                                            <><p>Nível quiz</p>
+                                            <p>Recupera { level.editRecoveryLevel ? (
+                                                <><input className="recovery-lifes-input" ref={recoveryLifesInputRef} /><button onClick={()=>recoveryLifesSave(idx)}>C</button></>
+                                            ) : (
+                                                <>{level.recoveryLifes} <button onClick={()=>recoveryLifesSetEditMode(idx)}>E</button></>
+                                            )} vidas</p>
+                                            <Link to={`/quizEditor/${courseId}/${level.order}`}>Editar</Link>
+                                            <button onClick={()=>deleteLevel(idx)} id="delete">D</button></>
+                                        )}
+                                    </li>
+                                ))
+                            )}
+                        </ul>
+                        {newLevelWindow ? (
+                            <div id="newLevelWindow">
+                                <p>Selecione o tipo:</p>
+                                <button onClick={() => newTheory()}>Nível teórico</button>
+                                <button onClick={() => setNewQuizWindow(true)}>Nível quiz</button>
+                                <button onClick={() => setNewLevelWindow(false)}>Cancelar</button>
+                            </div>
+                        ) : (
+                            <button onClick={() => setNewLevelWindow(true)}>+</button>
                         )}
-                    </ul>
-                    {newLevelWindow ? (
-                        <div id="newLevelWindow">
-                            <p>Selecione o tipo:</p>
-                            <button onClick={() => newTheory()}>Nível teórico</button>
-                            <button onClick={() => setNewQuizWindow(true)}>Nível quiz</button>
-                            <button onClick={() => setNewLevelWindow(false)}>Cancelar</button>
-                        </div>
-                    ) : (
-                        <button onClick={() => setNewLevelWindow(true)}>+</button>
-                    )}
-                    {newQuizWindow && (
-                        <>
-                            <input 
-                                type="number"
-                                value={quizLifes}
-                                onChange={e => setQuizLifes(Number(e.target.value))}
-                            />
-                            <p>Completar o nível recupera quantas vidas?</p>
-                            <button onClick={() => newQuiz(quizLifes)}>Criar</button>
-                        </>
-                    )}
+                        {newQuizWindow && (
+                            <>
+                                <input 
+                                    type="number"
+                                    value={quizLifes}
+                                    onChange={e => setQuizLifes(Number(e.target.value))}
+                                />
+                                <p>Completar o nível recupera quantas vidas?</p>
+                                <button onClick={() => newQuiz(quizLifes)}>Criar</button>
+                            </>
+                        )}
+                    </div>
+                    <div className='edit-course'>
+                        <form onSubmit={updateCourse}>
+                            <label>
+                                <p>Título:</p>
+                                <input type="text" name="title" defaultValue={forms?.title} required />
+                            </label>
+                            <label>
+                                <p>Descrição:</p>
+                                <input type="text" name="description" defaultValue={forms?.description} />
+                            </label>
+                            {/* <label>
+                                <p>Imagem:</p>
+                                <input type="file" name="thumbnail" accept='image/*' required />
+                            </label> */}
+                            <label>
+                                <p>Máximo de vidas:</p>
+                                <input type="number" name="maxLifes" defaultValue={forms?.description} required />
+                            </label>
+                            <label>
+                                <p>Prática recupera quantas vidas?</p>
+                                <input type="number" name="practiceRecoveryLife" defaultValue={forms?.practiceRecoveryLife} required />
+                            </label>
+                            <label>
+                                <p>Tempo para recuperar 1 vida:</p>
+                                <input type="number" name="timeRecoveryLife" defaultValue={forms?.secondsRecoveryLife} required />
+                            </label>
+                            <button type="submit">ATUALIZAR</button>
+                        </form>
+                    </div>
+                    <button>PUBLICAR</button>
                 </main>
             </div>
             <Footer />

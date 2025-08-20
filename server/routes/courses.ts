@@ -148,6 +148,24 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json("Erro interno no servidor");
         }
     });
+    app.post("/updateCourse/:courseId", requireLogin(prisma), async(req: Request, res: Response)=>{
+        const course = await verifyCourseAccess(req, res, prisma);
+        if(course==null){
+            return;
+        }
+        await prisma.course.update({
+            where: {
+                id: course.id
+            },
+            data: {
+                title: req.body.title,
+                maxLifes: Number(req.body.maxLifes),
+                description: req.body.description,
+                secondsRecoveryLife: 1000, //só para teste
+                practiceRecoveryLife: Number(req.body.practiceRecoveryLife),
+            }
+        })
+    })
     app.get("/getFile/*", async (req: Request, res: Response) => {
         try{
             const relativePath = req.params[0]; // pega tudo após /getFile/
@@ -185,7 +203,6 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json("Erro interno no servidor");
         }
     });
-
     app.post("/createLevel/:type/:courseId/:recoveryLifes", requireLogin(prisma), async (req: Request, res: Response) => {
         try{
             const course = await verifyCourseAccess(req, res, prisma);
@@ -217,7 +234,6 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json(er);
         }
     });
-
     app.get("/getleveltoedit/:courseId/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
         try{
             const level = await verifyLevelAccess(req, res, prisma);
@@ -235,7 +251,6 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
         }
         
     });
-
     app.post("/saveLevel/:courseId/:order", requireLogin(prisma), async (req: Request, res: Response)=>{
         try{
             const level = await verifyLevelAccess(req, res, prisma); // Se não tiver, já envia a resposta de erro
@@ -254,7 +269,6 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json(er);
         }
     });
-
     app.delete("/deleteLevel/:courseId/:order", requireLogin(prisma), async(req: Request, res: Response)=>{
         try{
             const level = await verifyLevelAccess(req, res, prisma);
@@ -281,7 +295,6 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json(er);
         }
     });
-
     app.post("/updateLevel/:courseId/:order", requireLogin(prisma), async(req: Request, res: Response)=>{
         try{
             const level = await verifyLevelAccess(req, res, prisma);
@@ -302,4 +315,45 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json(er);
         }
     });
+    app.post("/publishCourse/:courseId", requireLogin(prisma), async(req: Request, res: Response)=>{
+        try{
+            const course = await verifyCourseAccess(req, res, prisma);
+            if(course==null){
+                return;
+            }
+            const levels = await prisma.level.findMany({ // O Prisma já retorna tudo por padrão
+                where: {
+                    courseId: course.id
+                }
+            });
+            let theoricLevelExistance: boolean = false;
+            let quizLevelExistance: boolean = false;
+            for(const level of levels){
+                if(level.type == 0 && level.content != null){
+                    theoricLevelExistance = true;
+                }
+                if(level.type == 1 && level.content != null){
+                    quizLevelExistance = true;
+                }
+            }
+            if(theoricLevelExistance && quizLevelExistance){
+                await prisma.course.update({
+                    where: {
+                        id: course.id
+                    },
+                    data: {
+                        state: 1
+                    }
+                });
+                res.status(200).json(course);
+            }
+            else{
+                res.status(400).json("O curso está incompleto");
+            }
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
+    })
 }
