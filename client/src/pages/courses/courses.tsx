@@ -1,25 +1,27 @@
 import './courses.scss';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import api from '../../api';
 import Nav from '../../components/nav/nav';
 import Footer from '../../components/footer/footer';
+import CoursesCarousel from '../../components/CoursesCarousel/CoursesCarousel';
+import { Link } from 'react-router-dom';
 
 function Courses(){
-    
+    const [courses, setCourses] = useState<any[]>([]);
+    useEffect(()=>{
+        (async()=>{
+            const courses = await api.get("/getcourses");
+            setCourses(courses.data);
+        })();
+    }, []);
     return (
         <>
             <Nav />
             <div id="courses">
                 <main>
-                    <section id="playing">
-
-                    </section>
-                    <section id="finished">
-
-                    </section>
-                    <section id="mycourses">
-
-                    </section>
+                    <CoursesCarousel title="Em destaque" courses={courses} renderActions={course=>(
+                        <Link className='courseEditor' to={`/`}>Jogar</Link>
+                    )}/>
                 </main>
             </div>
             <Footer />

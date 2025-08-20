@@ -82,20 +82,20 @@ function CourseEditor() {
             );
         }
     }
-    const updateCourse = async(ev: React.FormEvent)=>{
+    const updateCourse = (ev: React.FormEvent)=>{
         ev.preventDefault();
-        try{
-            const formData = new FormData(ev.target as HTMLFormElement);
-            const courseResponse = await api.post("/updatecourse", formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            });
-            console.log(courseResponse);
-        }
-        catch(er: any){
+        const formData = new FormData(ev.target as HTMLFormElement);
+        api.post("/updatecourse", formData).catch(er=>{
             console.log(er.response.data);
-        }
+        })
+    }
+    const publishCourse = ()=>{
+        api.post(`/publishCourse/${courseId}`).catch(er=>{
+            if(er.response.status == 400){
+                alert("Você precisa ter 1 nível teórico e 1 nível quiz, com conteúdo");
+            }
+            console.log(er);
+        })
     }
     return (
         <>
@@ -180,7 +180,7 @@ function CourseEditor() {
                             <button type="submit">ATUALIZAR</button>
                         </form>
                     </div>
-                    <button>PUBLICAR</button>
+                    <button onClick={()=>publishCourse()}>PUBLICAR</button>
                 </main>
             </div>
             <Footer />

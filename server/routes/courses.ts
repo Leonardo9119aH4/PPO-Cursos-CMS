@@ -355,5 +355,20 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             console.log(er);
             res.status(500).json(er);
         }
-    })
+    });
+    // Parte da aquisição de cursos públicos
+    app.get("/getcourses", async (req: Request, res: Response)=>{
+        try{
+            const courses = await prisma.course.findMany({
+                where: {
+                    state: 1
+                }
+            });
+            res.status(200).json(courses);
+        }
+        catch(er){
+            res.status(500).json(er);
+            console.log(er);
+        }
+    });
 }
