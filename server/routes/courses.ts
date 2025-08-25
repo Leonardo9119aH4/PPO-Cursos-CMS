@@ -356,49 +356,4 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json(er);
         }
     });
-    // Parte da aquisição de cursos públicos
-    app.get("/getcourses", async (req: Request, res: Response)=>{
-        try{
-            const courses = await prisma.course.findMany({
-                where: {
-                    state: 1
-                }
-            });
-            res.status(200).json(courses);
-        }
-        catch(er){
-            res.status(500).json(er);
-            console.log(er);
-        }
-    });
-    app.get("/getCourse/:courseId", requireLogin(prisma), async (req: Request, res: Response)=>{
-        try{
-            const course = await prisma.course.findUnique({
-                where: {
-                    id: Number(req.params.courseId)
-                }
-            });
-            if(course == null){
-                res.sendStatus(404);
-                return;
-            }
-            if(course.state == 0 || course.state == 2){
-                res.sendStatus(403);
-                return;
-            }
-            const levels = await prisma.level.findMany({
-                where: {
-                    courseId: Number(req.params.courseId)
-                }
-            })
-            res.status(200).json({
-                course,
-                levels: levels
-            });
-        }
-        catch(er){
-            res.status(500).json(er);
-            console.log(er);
-        }
-    });
 }

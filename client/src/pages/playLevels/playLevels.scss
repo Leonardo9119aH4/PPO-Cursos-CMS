@@ -1,3 +1,56 @@
+@use '../../global.scss' as mixins;
+$levelWidth: 15;
+
+@function calcGridColumnsRepeat($width, $imageWidth){
+    @if 357/$levelWidth - round($imageWidth/$levelWidth) > 0{
+        @return round($imageWidth/$levelWidth)-1;
+    }
+    @else {
+        @return round($imageWidth/$levelWidth);
+    }
+}
+
 #play-levels{
-    
+    main {
+        height: 99vh;
+        & #levels{
+            width: 80%;
+            float: left;
+            height: 100%;
+            & ul{
+                display: grid;
+                grid-template-columns: repeat(#{calcGridColumnsRepeat($levelWidth, 357)}, 1fr);
+                //grid-template-rows: repeat(4, 1fr);
+                & li{
+                    background-image: url("../../assets/level.png"); // 357 x 121
+                    width: #{$levelWidth}vw;
+                    aspect-ratio: 357 / 121;
+                    background-size: cover;
+                    @include mixins.centralizeColumm;
+                    & a {
+                        font-size: 2rem;
+                        color: black;
+                        text-decoration: none;
+                        &:hover{
+                            color: red;
+                        }
+                    }
+                }
+            }
+        }
+        & #game{
+            width: 20%;
+            height: 100%;
+            float: right;
+            background-color: lightgray;
+            & h1{
+                background-image: url("../../assets/life.png");
+                aspect-ratio: 64 / 55;
+                background-size: cover;
+                width: 10vw;
+                @include mixins.centralizeColumm;
+
+            }
+        }
+    }
 }

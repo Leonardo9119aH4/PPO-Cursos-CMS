@@ -8,6 +8,7 @@ import multer from "multer";
 import dotenv from "dotenv";
 import session from "express-session";
 import { User } from "./routes/users";
+import { play } from "./routes/play";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -51,6 +52,7 @@ async function main(){
     }))
     users(app, prisma, storage);
     courses(app, prisma, storage);
+    play(app, prisma);
 }
 
 main().catch((e) => {

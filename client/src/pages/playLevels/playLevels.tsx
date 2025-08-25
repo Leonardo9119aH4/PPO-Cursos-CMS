@@ -38,8 +38,7 @@ function PlayLevels(){
                     <ul>
                     {playLevels?.map((level, i)=>(
                         <li key={i}>
-                            <Link to="/">{i}</Link>
-                            <img src={levelImg} />
+                            <Link to={`${Number(level.type) === 1 ? "/playQuiz" : "/viewTheory"}/${level.id}`}>{i}</Link>
                         </li>
                     ))}
                     </ul>
@@ -47,7 +46,7 @@ function PlayLevels(){
                     <div id="game">
                         <div id="lifes">
                             <h1>5</h1>
-                            <img />
+                            <Link to="/">PRATICAR</Link>
                         </div>
                         <div id="rank">
 

@@ -8,7 +8,7 @@ html, body, #root{
     flex-direction: column;
 }
 #root>div{
-    flex: 1;
+    flex: none;
 }
 @mixin gray-button{
     margin-top: 0.5rem;
