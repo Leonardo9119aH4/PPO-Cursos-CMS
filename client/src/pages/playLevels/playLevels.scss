@@ -19,7 +19,7 @@ $levelWidth: 15;
             height: 100%;
             & ul{
                 display: grid;
-                grid-template-columns: repeat(#{calcGridColumnsRepeat($levelWidth, 357)}, 1fr);
+                grid-template-columns: repeat(4, 1fr); //grid-template-columns: repeat(#{calcGridColumnsRepeat($levelWidth, 357)}, 1fr);
                 //grid-template-rows: repeat(4, 1fr);
                 & li{
                     background-image: url("../../assets/level.png"); // 357 x 121
@@ -43,13 +43,16 @@ $levelWidth: 15;
             height: 100%;
             float: right;
             background-color: lightgray;
-            & h1{
-                background-image: url("../../assets/life.png");
-                aspect-ratio: 64 / 55;
-                background-size: cover;
-                width: 10vw;
+            & #lifes {
                 @include mixins.centralizeColumm;
-
+                & h1{
+                    background-image: url("../../assets/life.png");
+                    aspect-ratio: 64 / 55;
+                    background-size: cover;
+                    width: 10vw;
+                    @include mixins.centralizeColumm;
+    
+                }
             }
         }
     }

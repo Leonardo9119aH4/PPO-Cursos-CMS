@@ -38,7 +38,7 @@ export async function play(app: Application, prisma: PrismaClient){
             console.log(er);
         }
     });
-    app.get("/getCourse/:courseId", requireLogin(prisma), async (req: Request, res: Response)=>{
+    app.get("/getCourse/:courseId", requireLogin(prisma), async (req: Request, res: Response)=>{ //também retorna os níveis de onde o usuáio parou
         try{
             const course = await prisma.course.findUnique({
                 where: {
@@ -66,6 +66,35 @@ export async function play(app: Application, prisma: PrismaClient){
         catch(er){
             res.status(500).json(er);
             console.log(er);
+        }
+    });
+    app.post("/startCourse/:courseId", requireLogin(prisma), async(req: Request, res: Response)=>{
+        try{
+            const course = await prisma.course.findUnique({
+                where: {
+                    id: Number(req.params.courseId)
+                }
+            });
+            if(course == null){
+                res.sendStatus(404);
+                return;
+            }
+            if(course.state == 0 || course.state == 2){
+                res.sendStatus(403);
+                return;
+            }
+            const studying = await prisma.studying.create({
+                data: {
+                    lifes: course.maxLifes,
+                    userId: req.session.user!.id,
+                    courseId: course.id
+                }
+            });
+            res.status(200).json(studying);
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
         }
     });
     app.get("/getLevel/:levelId", requireLogin(prisma), async(req: Request, res: Response)=>{

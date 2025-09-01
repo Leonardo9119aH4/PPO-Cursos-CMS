@@ -8,8 +8,6 @@ function Nav(){
     const [isHideNav, setIsHideNav] = useState(false);
     const toggleNav = () => {
         setIsHideNav(!isHideNav);
-        const navHeight = isHideNav ? '12.5vh' : '0';
-        document.documentElement.style.setProperty('--navHeight', navHeight);
     }
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     useEffect(()=>{
@@ -32,33 +30,33 @@ function Nav(){
     }, [])
 
     return (
-        <>
         <nav className={isHideNav ? 'hidden' : ''}>
-            <Link to="/" id="logo">
-                <img src={logo} alt="Logo" />
-            </Link>
-            <div id="navLinks">
-            {isLoggedIn ? (
-                <>
-                    <Link className="navLink" to="/profile">Perfil</Link>
-                    <Link className="navLink" to="/courses">Cursos</Link>
-                </>
-                ) : (
-                <>
-                    <Link className="navLink" to='/signin'>Entrar</Link>
-                    <Link className="navLink" to='/signup'>Cadastrar</Link>
-                </>
+            <div className='nav-content'>
+                <Link to="/" id="logo">
+                    <img src={logo} alt="Logo" />
+                </Link>
+                <div id="navLinks">
+                {isLoggedIn ? (
+                    <>
+                        <Link className="navLink" to="/profile">Perfil</Link>
+                        <Link className="navLink" to="/courses">Cursos</Link>
+                    </>
+                    ) : (
+                    <>
+                        <Link className="navLink" to='/signin'>Entrar</Link>
+                        <Link className="navLink" to='/signup'>Cadastrar</Link>
+                    </>
+                    )}
+                </div>
+            </div>
+            <div id="navButton">
+                {isHideNav ? (
+                    <button onClick={toggleNav}>↓</button>
+                ):(
+                    <button onClick={toggleNav}>↑</button>
                 )}
             </div>
         </nav>
-        <div id="navButton">
-            {isHideNav ? (
-                <button onClick={toggleNav}>↓</button>
-            ):(
-                <button onClick={toggleNav}>↑</button>
-            )}
-        </div>
-        </>
     )
 }
 export default Nav;

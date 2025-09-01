@@ -1,54 +1,59 @@
 @use '../../global.scss' as mixins; // Não remover, precisa para o mixin de botão
-:root{
-    --navHeight: 12.5vh;
-}
 nav{
-    width: 100vw;
-    height: var(--navHeight);
-    background-color: lightgray;
-    display: flex;
-    padding: 1rem;
-    justify-content: space-between;
-    position: fixed;
-    top: 0;
-    z-index: 100;
-    box-sizing: border-box;
-    transition: 1s;
-    box-shadow: 1px 1px 5px black;
-    & #logo>img{
-        width: 5rem;
-    }
-    & #navLinks{
+    & .nav-content{
+        width: 100vw;
+        height: 12.5vh;
+        background-color: lightgray;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        & .navLink{
-            font-size: 2rem;
-            color: black;
-            text-decoration: none;
-            margin-right: 1rem;
-            &:hover{
-                color: blue;
-                cursor: pointer;
+        padding: 1rem;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        z-index: 100;
+        box-sizing: border-box;
+        transition: 1s;
+        box-shadow: 1px 1px 5px black;
+        & #logo>img{
+            width: 5rem;
+        }
+        & #navLinks{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            & .navLink{
+                font-size: 2rem;
+                color: black;
+                text-decoration: none;
+                margin-right: 1rem;
+                &:hover{
+                    color: blue;
+                    cursor: pointer;
+                }
             }
         }
     }
-    &.hidden{
-        opacity: 0;
-        visibility: hidden;
+    & #navButton{
+        position: fixed;
+        z-index: 101;
+        justify-self: center;
+        transition: 1s;
+        left: calc(50vw - 1rem);
+        box-shadow: 1px 1px 5px black;
+        top: 12.5vh;
+        &>button{
+            @include mixins.gray-button;
+            margin: 0;
+            font-size: 1.5rem;
+        }
     }
-}
-#navButton{
-    position: fixed;
-    z-index: 101;
-    top: var(--navHeight);
-    justify-self: center;
-    transition: 1s;
-    left: calc(50vw - 1rem);
-    box-shadow: 1px 1px 5px black;
-    &>button{
-        @include mixins.gray-button;
-        margin: 0;
-        font-size: 1.5rem;
+    &.hidden{
+        & .nav-content{
+            opacity: 0;
+            visibility: hidden;
+            height: 0;
+        }
+        & #navButton {
+        top: 0;
+    }
     }
 }

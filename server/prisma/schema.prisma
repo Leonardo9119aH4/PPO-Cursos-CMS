@@ -51,9 +51,9 @@ model Level{
 }
 model Studying{
   id Int @id @default(autoincrement())
-  xp Int
+  xp Int @default(0)
   lifes Int
-  levels Int
+  levels Int @default(0)
   userId Int
   user User @relation(fields: [userId], references: [id])
   courseId Int
