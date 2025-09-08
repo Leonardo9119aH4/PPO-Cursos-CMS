@@ -43,7 +43,7 @@ function Modal({ isOpen, onClose, children, title }: ModalProps) {
           <div className="modal-header">
             <h2>{title}</h2>
             <button className="modal-close" onClick={onClose}>
-              ×
+              x
             </button>
           </div>
         )}

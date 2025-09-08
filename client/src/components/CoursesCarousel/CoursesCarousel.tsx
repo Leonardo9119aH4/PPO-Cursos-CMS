@@ -1,4 +1,5 @@
 import { Course } from "../../types";
+import "./coursesCarrousel.scss";
 
 interface CoursesCarouselProps { //gambiarra do copilot pro ts não encher o saco
     title: string;

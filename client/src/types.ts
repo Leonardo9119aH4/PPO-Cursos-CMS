@@ -1,3 +1,12 @@
+export interface User {
+    id: number,
+    username: String,
+    password: String,
+    realname: String,
+    email: String,
+    phone?: String
+}
+
 export interface Level {
     id: number,
     type: string;

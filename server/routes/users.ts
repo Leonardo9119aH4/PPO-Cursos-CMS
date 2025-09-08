@@ -232,6 +232,25 @@ export async function users(app: Application, prisma: PrismaClient, storage: str
     });
 
     app.post("/updatePassword", async (req: Request, res: Response)=>{ 
+        
+    });
 
-    })
+    app.get("/getUserPublicInfo/:userId", async(req: Request, res: Response)=>{
+        try{
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: Number(req.params.userId)
+                }
+            });
+            if(user==null){
+                res.status(404).json("Usuário não encontrado");
+                return;
+            }
+            res.status(200).json(user);
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
+    });
 }

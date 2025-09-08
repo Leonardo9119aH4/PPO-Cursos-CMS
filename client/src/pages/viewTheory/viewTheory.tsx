@@ -40,8 +40,15 @@ function ViewTheory(){
             }
         })();
     });
-    const finish = ()=>{
-
+    const finish = async()=>{
+        try{
+            await api.post(`/levelUp/${level?.courseId}/${levelId}`);
+            navigate(`/playLevels/${level?.courseId}`);
+        }
+        catch(er){
+            console.error("Erro ao salvar progresso: ", er);
+            alert("Erro ao salvar o progresso. Tente novamente mais tarde.");
+        }
     }
     return (
         <>
