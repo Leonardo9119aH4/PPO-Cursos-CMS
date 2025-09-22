@@ -227,4 +227,24 @@ export async function play(app: Application, prisma: PrismaClient){
             res.status(500).json(er);
         }
     });
+    app.get("/getStudying/:courseId", requireLogin(prisma), async(req: Request, res: Response)=>{
+        try{
+            const courseId = Number(req.params.courseId);
+            if(isNaN(courseId)){
+                res.status(400).json("ID inválido");
+                return;
+            }
+            const studying = await prisma.studying.findFirst({
+                where: {
+                    userId: req.session.user!.id,
+                    courseId: courseId
+                }
+            });
+            res.status(200).json(studying);
+        }
+        catch(er){
+            res.status(500).json(er);
+        }
+    });
+    app.post("/")
 }
