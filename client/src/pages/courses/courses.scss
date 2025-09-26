@@ -38,3 +38,19 @@
         }
 	}
 }
+.modal-content{
+    .modal-body{
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        p{
+            margin: 0;
+        }
+        a, button{
+            display: block;
+            @include beatfulButton;
+            background-color: lightgray;
+            text-align: center;
+        }
+    }
+}

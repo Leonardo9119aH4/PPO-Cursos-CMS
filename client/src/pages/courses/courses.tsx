@@ -5,7 +5,7 @@ import Nav from '../../components/nav/nav';
 import Footer from '../../components/footer/footer';
 import CoursesCarousel from '../../components/CoursesCarousel/CoursesCarousel';
 import { Link, useNavigate } from 'react-router-dom';
-import { Course, User } from '../../types';
+import { Course, Level, User } from '../../types';
 import Modal from '../../components/modal/modal';
 
 function Courses(){
@@ -15,6 +15,7 @@ function Courses(){
     const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
     const [courseAuthor, setCourseAuthor] = useState<User | null>(null);
     const [loading, setLoading] = useState(false);
+    const [isUserLogged, setIsUserLogged] = useState(false);
     const navigate = useNavigate();
 
     useEffect(()=>{
@@ -24,6 +25,7 @@ function Courses(){
                 setDoingCourses(playingCourses.data);
                 const notPlayingCourses = await api.get<Course[]>("/getcourses/2");
                 setTopCourses(notPlayingCourses.data);
+                setIsUserLogged(true);
             }
             catch(er: any){
                 if(er.response.status == 401){ // Caso o usuário não esteja logado
@@ -104,9 +106,9 @@ function Courses(){
                             <p>{selectedCourse?.description}</p>
                             <p>Máximo de vidas: {selectedCourse?.maxLifes}</p>
                             <p>Vidas recuperadas pela prática: {selectedCourse?.practiceRecoveryLife}</p>
-                            <p>{selectedCourse?.levels?.length} níveis.</p>
+                            <p>{selectedCourse?.levelPosts?.length} níveis.</p>
                             <p>{"Criador por: "+courseAuthor?.username || "Erro ao buscar o autor do curso"}</p>
-                            {doingCourses.length>0 ? (
+                            {isUserLogged ? (
                                 <button onClick={startNewCourse}>Começar curso</button>
                             ) : (
                                 <Link to="/signup">Começar curso</Link>

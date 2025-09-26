@@ -90,7 +90,8 @@ function CourseEditor() {
         const formData = new FormData(ev.target as HTMLFormElement);
         api.post("/updatecourse", formData).catch(er=>{
             console.log(er.response.data);
-        })
+        });
+        alert("Curso atualizado com sucesso!");
     }
     const publishCourse = ()=>{
         api.post(`/publishCourse/${courseId}`).catch(er=>{
@@ -98,7 +99,8 @@ function CourseEditor() {
                 alert("Você precisa ter 1 nível teórico e 1 nível quiz, com conteúdo");
             }
             console.log(er);
-        })
+        });
+        alert("Curso publicado com sucesso!");
     }
     return (
         <>

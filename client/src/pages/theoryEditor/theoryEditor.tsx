@@ -18,9 +18,10 @@ function TheoryEditor() {
     const saveTheoryRemote = () => {
         try{
             api.post(`/saveLevel/${courseId}/${order}`, textContent);
+            alert("Salvo com sucesso na nuvem!");
         }
         catch(er){
-
+            
         }
     }
     const getTheoryRemote = async () => {

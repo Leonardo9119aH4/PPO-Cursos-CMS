@@ -42,6 +42,7 @@ function QuizEditor(){
         api.post(`/saveLevel/${courseId}/${order}`, questionsToSave).catch((er)=>{
             console.log(er.response.data);
         });
+        alert("Salvo com sucesso na nuvem!");
     }
 
     useEffect(()=>{

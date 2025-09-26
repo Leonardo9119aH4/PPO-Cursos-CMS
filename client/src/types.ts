@@ -48,7 +48,7 @@ export interface Course {
     state: number;
     userId: number;
     [key: string]: any;
-    levels: Level[];
+    levelPosts: Level[];
 }
 
 export interface Question {

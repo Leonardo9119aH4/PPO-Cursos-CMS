@@ -70,6 +70,9 @@ export async function play(app: Application, prisma: PrismaClient){
                 const allPublicCourses = await prisma.course.findMany({
                     where: {
                         state: 1
+                    },
+                    include: {
+                        levelPosts: true
                     }
                 });
                 const userStudyings = await prisma.studying.findMany({ // Busca cursos que o usuário está fazendo
@@ -89,6 +92,9 @@ export async function play(app: Application, prisma: PrismaClient){
                 courses = await prisma.course.findMany({
                     where: {
                         state: 1
+                    },
+                    include: {
+                        levelPosts: true
                     }
                 });
             }

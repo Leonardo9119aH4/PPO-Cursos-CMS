@@ -4,9 +4,9 @@ import MainRoutes from './router';
 import { BrowserRouter } from 'react-router';
 
 createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <BrowserRouter>
       <MainRoutes />
     </BrowserRouter>,
-  </React.StrictMode>
+  // </React.StrictMode>
 )
