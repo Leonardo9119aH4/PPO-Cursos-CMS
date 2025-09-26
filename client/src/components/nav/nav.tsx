@@ -1,5 +1,6 @@
 import './nav.scss';
-import logo from '../../assets/react.svg'
+import home from '../../assets/home.svg';
+import homeSelected from '../../assets/home_selected.svg';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../api';
@@ -28,12 +29,12 @@ function Nav(){
         }
         updateNav();
     }, [])
-
+    const [homeHover, setHomeHover] = useState(false);
     return (
         <nav className={isHideNav ? 'hidden' : ''}>
             <div className='nav-content'>
-                <Link to="/" id="logo">
-                    <img src={logo} alt="Logo" />
+                <Link to="/" id="logo" onMouseEnter={()=>setHomeHover(true)} onMouseLeave={()=>setHomeHover(false)}>
+                    <img src={homeHover ? homeSelected : home} alt="Página principal" />
                 </Link>
                 <div id="navLinks">
                 {isLoggedIn ? (

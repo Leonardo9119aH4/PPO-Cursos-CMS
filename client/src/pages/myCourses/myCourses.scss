@@ -4,22 +4,29 @@ div#mycourses{
         display: flex;
         flex-direction: column;
         margin-top: 5vh;
-        & h1{
-            display: inline;
-        }
         & section{
-            background-color: blue;
-            margin-bottom: 5vw;
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
+            background-color:rgb(55, 128, 212);
+            margin-bottom: 1vh;
+            box-shadow: 0 2px 2px 0 black;
+            >h1{
+                background-color: lightgray;
+                margin: 0;
+            }
             & .courses{
                 display: flex;
                 flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 1rem;
+                flex-wrap: nowrap;
                 & div{
                     display: flex;
                     flex-direction: column;
                     align-items: flex-start;
                     margin-left: 5vw;
+                    flex: 0 0 auto;
+                    margin-left: 1rem;
+                    margin-right: 1rem;
+                    min-width: 10vw;
                 }
                 & img{
                     max-height: 30vh;

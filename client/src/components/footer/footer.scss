@@ -1,16 +1,33 @@
 footer {
     background-color: gray;
+    color: black;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    & section{
-        display: grid;
-        place-items: center;
-        & a{
-            color: white;
-            text-decoration: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+    box-shadow: 0 -2px 16px 0 rgba(0,0,0,0.04);
+    font-size: 1rem;
+    & section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 0;
+        h1 {
+            font-weight: 600;
+            margin-bottom: 0.7rem;
         }
-        & a:hover{
-            color: blue;
+        a {
+            color: black;
+            text-decoration: none;
+            transition: color 0.2s;
+            opacity: 0.92;
+            word-break: break-word;
+        }
+        a:hover {
+            color: orangered;
+            opacity: 1;
+            text-decoration: underline;
             cursor: pointer;
         }
     }

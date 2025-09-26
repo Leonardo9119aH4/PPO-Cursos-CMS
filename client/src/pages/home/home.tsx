@@ -5,25 +5,14 @@ import Nav from '../../components/nav/nav';
 import Footer from '../../components/footer/footer';
 
 function Home() {
-    // Estado para armazenar o texto a ser exibido na div
-    const [hookTeste, setHookTeste] = useState<string>("");
-
-    // Função assíncrona corretamente dentro do componente
-    const teste = async () => {
-        const req = await api.post('/signup');
-        setHookTeste(String(req.data));  // Atualiza o estado com "ow"
-    };
-
     return (
         <>
             <Nav />
             <div id="home">
                 <main>
-                    <h1>HOME</h1>
-                    <h2>TESTE</h2>
-                    {/* O conteúdo da div é agora controlado pelo estado hookTeste */}
-                    <div>{hookTeste}</div>  
-                    <button onClick={teste}>Executar Teste</button>
+                    <h1>Minicursos grátis!</h1>
+                    <p>Crie seus próprios minicursos gamificados, crie uma conta e comece hoje mesmo a criar seus próprios minicursos!</p>
+                    <p>Ou jogue os minicursos da comunidade, e tente ser o melhor jogador de todos!</p>
                 </main>
             </div>
             <Footer />

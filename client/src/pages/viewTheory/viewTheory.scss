@@ -1,24 +1,37 @@
 @use '../../global.scss' as mixins;
 
 #view-theory{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: lightgray;
     & header{
         width: 100%;
         box-sizing: border-box;
+        text-align: center;
     }
     & main{
-        width: 100%;
+        width: 80vw;
         min-height: 80vh;
         box-sizing: border-box;
-        padding: 3rem;
-        background-color: lightgray;
+        background-color: white;
+        border-radius: 2rem;
+        box-shadow: 0 8px 8px 0 black;
         @include mixins.centralizeColumm;
         & .theory-content{
-            background-color: white;
             width: 100%;
-            min-height: 0.8*80vh;
+            box-sizing: border-box;
+            text-align: justify;
+            min-height: 64vh;
+            padding: 2rem 5rem;
         }
         & button{
-
+            @include mixins.beatfulButton;
+            background-color: lightgray;
+            padding: 1rem;
+            &:hover{
+                box-shadow: 0 0 10px 5px blue;
+            }
         }
     }
 }

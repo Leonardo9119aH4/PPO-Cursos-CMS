@@ -45,6 +45,9 @@ $levelWidth: 15;
             background-color: lightgray;
             & #lifes {
                 @include mixins.centralizeColumm;
+                a{
+                    @include mixins.beatfulButton;
+                }
                 & h1{
                     background-image: url("../../assets/life.png");
                     aspect-ratio: 64 / 55;

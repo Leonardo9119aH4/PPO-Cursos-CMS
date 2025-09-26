@@ -2,6 +2,13 @@ import { PrismaClient, Course, Level } from "@prisma/client";
 import { Application, NextFunction, Request, Response } from "express";
 import { getUsers, requireLogin, users }  from "./users";
 
+interface QuizContent {
+    alternatives: any[],
+    answer: number,
+    enunciation: string,
+    penalization: number
+}
+
 async function getLevelIfPublic(prisma: PrismaClient, levelId: number): Promise<Level | null>{
     const level = await prisma.level.findUnique({
         where: {
@@ -20,6 +27,19 @@ async function getLevelIfPublic(prisma: PrismaClient, levelId: number): Promise<
         return null;
     }
     return level;
+}
+
+function isQuizContentArray(content: any): content is QuizContent[] {
+    return (
+        Array.isArray(content) &&
+        content.every(q =>
+            typeof q === 'object' &&
+            Array.isArray(q.alternatives) &&
+            typeof q.answer === 'number' &&
+            typeof q.enunciation === 'string' &&
+            typeof q.penalization === 'number'
+        )
+    );
 }
 
 export async function play(app: Application, prisma: PrismaClient){
@@ -195,9 +215,9 @@ export async function play(app: Application, prisma: PrismaClient){
             const courseId = Number(req.params.courseId);
             const levelId = Number(req.params.levelId);
             if(isNaN(courseId) || isNaN(levelId)){
-                    res.status(400).json("ID inválido");
-                    return;
-                }
+                res.status(400).json("ID inválido");
+                return;
+            }
             const level = await prisma.level.findUnique({
                 where: { id: levelId },
                 select: { order: true, courseId: true }
@@ -246,5 +266,37 @@ export async function play(app: Application, prisma: PrismaClient){
             res.status(500).json(er);
         }
     });
-    app.post("/")
+    app.post("/wrongAnswer/:levelId/:question", requireLogin(prisma), async(req: Request, res: Response)=>{
+        try{
+            const levelId = Number(req.params.levelId);
+            const question = Number(req.params.question);
+            if(isNaN(levelId) || isNaN(question)){
+                res.status(400).json("ID inválido");
+                return;
+            }
+            const level = await getLevelIfPublic(prisma, levelId);
+            if(!level){
+                res.status(404).json("Nível não encontrado");
+                return;
+            }
+            if(!isQuizContentArray(level.content)){
+                res.status(400).json("Este nível não é um quiz!");
+                return;
+            }
+            const content = level.content as QuizContent[];
+            await prisma.studying.updateMany({
+                where: {
+                    courseId: level.courseId,
+                    userId: req.session.user!.id
+                },
+                data: {
+                    lifes: {decrement: content[question].penalization}
+                }
+            });
+            res.sendStatus(200);
+        }
+        catch(er){
+            res.status(500).json(er);
+        }
+    });
 }

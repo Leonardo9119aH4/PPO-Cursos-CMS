@@ -39,7 +39,7 @@ function ViewTheory(){
                 }
             }
         })();
-    });
+    }, []);
     const finish = async()=>{
         try{
             await api.post(`/levelUp/${level?.courseId}/${levelId}`);

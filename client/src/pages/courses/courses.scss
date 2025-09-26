@@ -1,0 +1,40 @@
+@import '../../global.scss';
+#courses {
+	min-height: 80vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background: #f7f9fb;
+	main {
+		width: 100%;
+		max-width: 90vw;
+		margin: 2rem auto 0 auto;
+		display: flex;
+		flex-direction: column;
+        img{
+            max-width: 50vw;
+        }
+        >section>h1{
+            background-color: gray;
+        }
+        .courses{
+            background-color: lightgray;
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            flex-wrap: nowrap;
+            >div{
+                flex: 0 0 auto;
+                margin-left: 1rem;
+                margin-right: 1rem;
+                min-width: 10vw;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                a{
+                    @include beatfulButton;
+                }
+            }
+        }
+	}
+}

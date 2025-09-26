@@ -6,6 +6,9 @@ import api from '../../api';
 import { useParams, Link } from 'react-router';
 import { useNavigate } from 'react-router';
 import { Course, Level } from '../../types';
+import trash from "../../assets/trash.svg";
+import edit from "../../assets/edit_icon.svg";
+import check from "../../assets/check_icon.svg";
 
 function CourseEditor() {
     interface LevelHook extends Level{
@@ -114,16 +117,16 @@ function CourseEditor() {
                                         {Number(level.type) == 0 ? ( //o Number() é porque o VS Code é burro e não quero falso erro
                                             <><p>Nível teórico</p>
                                             <Link to={`/theoryEditor/${courseId}/${level.order}`}>Editar</Link>
-                                            <button onClick={()=>deleteLevel(idx)} id="delete">D</button></>
+                                            <button onClick={()=>deleteLevel(idx)} id="delete"><img src={trash} /></button></>
                                         ) : (
                                             <><p>Nível quiz</p>
                                             <p>Recupera { level.editRecoveryLevel ? (
-                                                <><input className="recovery-lifes-input" ref={recoveryLifesInputRef} /><button onClick={()=>recoveryLifesSave(idx)}>C</button></>
+                                                <><input className="recovery-lifes-input" ref={recoveryLifesInputRef} /><button onClick={()=>recoveryLifesSave(idx)}><img src={check} /></button></>
                                             ) : (
-                                                <>{level.recoveryLifes} <button onClick={()=>recoveryLifesSetEditMode(idx)}>E</button></>
+                                                <>{level.recoveryLifes} <button onClick={()=>recoveryLifesSetEditMode(idx)}><img src={edit} /></button></>
                                             )} vidas</p>
                                             <Link to={`/quizEditor/${courseId}/${level.order}`}>Editar</Link>
-                                            <button onClick={()=>deleteLevel(idx)} id="delete">D</button></>
+                                            <button onClick={()=>deleteLevel(idx)} id="delete"><img src={trash} /></button></>
                                         )}
                                     </li>
                                 ))
