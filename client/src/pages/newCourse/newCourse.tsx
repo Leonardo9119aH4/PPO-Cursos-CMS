@@ -2,8 +2,10 @@ import './newCourse.scss';
 import Nav from '../../components/nav/nav';
 import Footer from '../../components/footer/footer';
 import api from '../../api';
+import { useNavigate } from 'react-router';
 
 function NewCourse(){
+    const navigate = useNavigate();
     const sendNewCourse = async (ev: React.FormEvent) => {
         ev.preventDefault();
         try{
@@ -14,6 +16,7 @@ function NewCourse(){
                 }
             });
             console.log(courseResponse);
+            navigate("/mycourses");
         }
         catch(er: any){
             console.log(er.response.data);

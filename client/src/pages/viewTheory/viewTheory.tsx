@@ -21,6 +21,7 @@ function ViewTheory(){
                 if(Number(level.data.type)==1){
                     navigate(`/playQuiz/${levelId}`);
                 }
+                console.log(level.data)
                 setLevel(level.data);
                 if(level.data.content) {
                     const html = generateHTML(level.data.content, [

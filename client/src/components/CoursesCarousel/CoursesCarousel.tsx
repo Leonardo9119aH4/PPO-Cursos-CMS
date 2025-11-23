@@ -12,14 +12,18 @@ function CoursesCarousel({title, courses, renderActions}: CoursesCarouselProps){
         <section className="courses-carousel">
             <h1>{title}</h1>
             <div className="courses">
-                {courses.map(course => (
-                    <div key={course.id}>
-                        <h1>{course.title}</h1>
-                        <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
-                        <p>{course.description}</p>
-                        {renderActions && renderActions(course)}
-                    </div>
-                ))}
+                {courses.length === 0 ? (
+                    <div className="empty">Sem cursos ainda</div>
+                ) : (
+                    courses.map(course => (
+                        <div key={course.id}>
+                            <h1>{course.title}</h1>
+                            <img src={`http://localhost:3000/getFile/${course.thubnail}`} alt={course.title} />
+                            <p>{course.description}</p>
+                            {renderActions && renderActions(course)}
+                        </div>
+                    ))
+                )}
             </div>
         </section>
     )

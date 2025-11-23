@@ -305,4 +305,103 @@ export async function play(app: Application, prisma: PrismaClient){
             res.status(500).json(er);
         }
     });
+    app.get("/getPractice/:courseId", requireLogin(prisma), async(req:Request, res:Response)=>{
+        try{
+            const courseId = Number(req.params.courseId);
+            if(isNaN(courseId)){
+                res.status(400).json("ID inválido");
+                return;
+            }
+            // Verifica se o usuário já começou o curso
+            const studying = await prisma.studying.findFirst({
+                where: {
+                    userId: req.session.user!.id,
+                    courseId: courseId
+                }
+            });
+            if(!studying){
+                res.status(403).json("Você precisa começar este curso primeiro");
+                return;
+            }
+
+            // Busca níveis do curso com order <= nível atual do usuário
+            const levels = await prisma.level.findMany({
+                where: {
+                    courseId: courseId,
+                    order: { lte: studying.levels }
+                }
+            });
+
+            // Coleta perguntas de níveis que sejam quiz (content como array de QuizContent)
+            const allQuestions: QuizContent[] = [];
+            for(const level of levels){
+                if(isQuizContentArray(level.content)){
+                    const content = level.content as QuizContent[];
+                    // concat questions
+                    allQuestions.push(...content);
+                }
+            }
+
+            // Embaralha e limita em 25 perguntas
+            const shuffled = allQuestions.slice();
+            for(let i = shuffled.length - 1; i > 0; i--){
+                const j = Math.floor(Math.random() * (i + 1));
+                const tmp = shuffled[i];
+                shuffled[i] = shuffled[j];
+                shuffled[j] = tmp;
+            }
+            const limited = shuffled.slice(0, 25);
+
+            res.status(200).json(limited);
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
+    });
+    app.post("/finishPractice/:courseId", requireLogin(prisma), async(req: Request, res: Response)=>{
+        try{
+            const courseId = Number(req.params.courseId);
+            if(isNaN(courseId)){
+                res.status(400).json("ID inválido");
+                return;
+            }
+            const course = await prisma.course.findUnique({
+                where: { id: courseId },
+                select: { maxLifes: true }
+            });
+            if(!course){
+                res.status(404).json("Curso não encontrado");
+                return;
+            }
+
+            const studying = await prisma.studying.findFirst({
+                where: {
+                    courseId: courseId,
+                    userId: req.session.user!.id
+                }
+            });
+            if(!studying){
+                res.status(403).json("Você precisa começar este curso primeiro");
+                return;
+            }
+
+            if(studying.lifes >= course.maxLifes){
+                // Já no máximo
+                res.status(200).json({ message: "Vidas já no máximo", studying });
+                return;
+            }
+
+            const updated = await prisma.studying.update({
+                where: { id: studying.id },
+                data: { lifes: { increment: 1 } }
+            });
+
+            res.status(200).json(updated);
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
+    });
 }

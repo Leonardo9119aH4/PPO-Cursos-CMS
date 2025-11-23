@@ -1,5 +1,6 @@
 @import '../../global.scss';
 div#mycourses{
+    min-height: 80vh;
     main{
         display: flex;
         flex-direction: column;

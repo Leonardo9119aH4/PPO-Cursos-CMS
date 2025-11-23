@@ -95,7 +95,7 @@ function Courses(){
                         )
                     }
                     <CoursesCarousel title="Em destaque" courses={topCourses} renderActions={course=>(
-                        <button onClick={()=>openModal(course)}>Ver curso</button>
+                        <button id="view-course" onClick={()=>openModal(course)}>Ver curso</button>
                     )}/>
                 </main>
                 <Modal isOpen={isModalOpen} onClose={closeModal} title="Curso">

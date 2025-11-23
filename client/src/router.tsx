@@ -14,6 +14,7 @@ import QuizEditor from "./pages/quizEditor/quizEditor";
 import PlayLevels from "./pages/playLevels/playLevels";
 import ViewTheory from "./pages/viewTheory/viewTheory";
 import PlayQuiz from "./pages/playQuiz/playQuiz";
+import Practice from "./pages/practice/practice";
 
 function MainRoutes(){
     return (
@@ -33,6 +34,7 @@ function MainRoutes(){
             <Route path="/playLevels/:courseId" element={<PlayLevels/>} />
             <Route path="/viewTheory/:levelId" element={<ViewTheory />} />
             <Route path="/playQuiz/:levelId" element={<PlayQuiz />} />
+            <Route path="/practice/:courseId" element={<Practice />} />
         </Routes>
     )
 }

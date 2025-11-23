@@ -34,9 +34,22 @@ $mainHeight: 80vh;
             background-color: white;
             min-height: $mainHeight*0.8;
             //@include centralizeColumm;
+            /* Espaço interno para que texto/cursor não encoste na borda */
+            padding: 0.75rem 1rem;
+            box-sizing: border-box;
+            line-height: 1.4;
+            outline: none; /* remove outline padrão ao focar */
+            border: 1px solid #bbb;
+            border-radius: 0.6rem;
+            transition: border-color .15s ease, box-shadow .15s ease;
+            &:focus{
+                border-color: #4f46e5;
+                box-shadow: 0 0 0 3px rgba(79,70,229,.25);
+            }
             & p{
                 border: none;
                 height: auto;
+                margin: 0 0 0.85rem 0;
             }
         }
     }

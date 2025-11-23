@@ -146,8 +146,9 @@ function QuizEditor(){
                             <div className="penalization">
                                 <p>Erro tira quantas vidas?</p>
                                 <input type="number" value={question.penalization} onChange={e=>handlePenalizationChange(qIdx, Number(e.target.value))}></input>
+                                {/* Botão de remover questão ao lado da penalização */}
+                                <button onClick={()=>removeQuestion(qIdx)} className="delete"><img src={closeIcon} /></button>
                             </div>
-                            <button onClick={()=>removeQuestion(qIdx)} className="delete"><img src={closeIcon} /></button>
                         </section>
                         ))}
                         <button onClick={()=>addQuestion()}>+</button>

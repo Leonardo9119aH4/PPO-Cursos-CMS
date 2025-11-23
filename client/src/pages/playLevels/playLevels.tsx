@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Course, Level, Studying } from "../../types";
 import api from "../../api";
 import { Link } from "react-router-dom";
+import Modal from "../../components/modal/modal";
 import levelImg from "../../assets/level.png";
 
 function PlayLevels(){
@@ -13,6 +14,7 @@ function PlayLevels(){
     const [playLevels, setPlayLevels] = useState<Level[]>();
     const [lifes, setLifes] = useState<number>(0);
     const navigate = useNavigate();
+    const [showNoLifeModal, setShowNoLifeModal] = useState<boolean>(false);
     useEffect(()=>{
         (async()=>{
             try{
@@ -41,7 +43,14 @@ function PlayLevels(){
                     <ul>
                     {playLevels?.map((level, i)=>(
                         <li key={i}>
-                            <Link to={`${Number(level.type) === 1 ? "/playQuiz" : "/viewTheory"}/${level.id}`}>{i}</Link>
+                            <button className="level-link" onClick={()=>{
+                                // Se usuário sem vidas, mostra modal e impede iniciar nível
+                                if(lifes <= 0){
+                                    setShowNoLifeModal(true);
+                                    return;
+                                }
+                                navigate(`${Number(level.type) === 1 ? "/playQuiz" : "/viewTheory"}/${level.id}`);
+                            }}>{i}</button>
                         </li>
                     ))}
                     </ul>
@@ -49,13 +58,23 @@ function PlayLevels(){
                     <div id="game">
                         <div id="lifes">
                             <h1>{lifes}</h1>
-                            <Link to="/">PRATICAR</Link>
+                            <Link to={`/practice/${courseId}`}>PRATICAR</Link>
                         </div>
                         <div id="rank">
 
                         </div>
                     </div>
                 </main>
+                <Modal isOpen={showNoLifeModal} onClose={()=>setShowNoLifeModal(false)} title="Sem vidas">
+                    <p>Você não pode começar um novo nível sem vidas. Pratique para recuperar vidas antes de tentar novamente.</p>
+                    <div style={{display: 'flex', gap: '1rem', marginTop: '1rem'}}>
+                        <button onClick={()=>{
+                            setShowNoLifeModal(false);
+                            if(courseId) navigate(`/practice/${courseId}`);
+                        }}>Ir para prática</button>
+                        <button onClick={()=>setShowNoLifeModal(false)}>Fechar</button>
+                    </div>
+                </Modal>
             </div>
             <Footer />
         </>

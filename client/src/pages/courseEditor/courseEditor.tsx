@@ -142,17 +142,17 @@ function CourseEditor() {
                                 <button onClick={() => setNewLevelWindow(false)}>Cancelar</button>
                             </div>
                         ) : (
-                            <button onClick={() => setNewLevelWindow(true)}>+</button>
+                            <button id="newLevel" onClick={() => setNewLevelWindow(true)}>+</button>
                         )}
                         {newQuizWindow && (
                             <>
-                                <input 
+                                <input id="quizLifesInput"
                                     type="number"
                                     value={quizLifes}
                                     onChange={e => setQuizLifes(Number(e.target.value))}
                                 />
                                 <p>Completar o nível recupera quantas vidas?</p>
-                                <button onClick={() => newQuiz(quizLifes)}>Criar</button>
+                                <button id="createQuiz" onClick={() => newQuiz(quizLifes)}>Criar</button>
                             </>
                         )}
                     </div>
