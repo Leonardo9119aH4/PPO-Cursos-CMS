@@ -356,4 +356,43 @@ export async function courses(app: Application, prisma: PrismaClient, storage: s
             res.status(500).json(er);
         }
     });
+    app.get("/rankUsers/:courseId", async(req: Request, res: Response)=>{
+        try{
+            const courseId = Number(req.params.courseId);
+            if(isNaN(courseId)){
+                res.status(400).json("ID inválido");
+                return;
+            }
+
+            const top = await prisma.studying.findMany({
+                where: { courseId: courseId },
+                orderBy: { xp: 'desc' },
+                take: 5,
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            username: true,
+                            realname: true,
+                            email: true
+                        }
+                    }
+                }
+            });
+
+            // Map to a cleaner payload
+            const result = top.map(s => ({
+                userId: s.userId,
+                username: s.user?.username ?? null,
+                realname: s.user?.realname ?? null,
+                xp: s.xp
+            }));
+
+            res.status(200).json(result);
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
+    });
 }

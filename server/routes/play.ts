@@ -404,4 +404,65 @@ export async function play(app: Application, prisma: PrismaClient){
             res.status(500).json(er);
         }
     });
+    app.post("/addxp/:courseId", requireLogin(prisma), async(req: Request, res: Response)=>{
+        try{
+            const courseId = Number(req.params.courseId);
+            if(isNaN(courseId)){
+                res.status(400).json("ID inválido");
+                return;
+            }
+
+            const amount = Number(req.body.xp ?? req.body.amount ?? req.body.value);
+            if(isNaN(amount) || amount <= 0){
+                res.status(400).json("Quantidade de XP inválida");
+                return;
+            }
+
+            const studying = await prisma.studying.findFirst({
+                where: {
+                    courseId: courseId,
+                    userId: req.session.user!.id
+                }
+            });
+            if(!studying){
+                res.status(403).json("Você precisa começar este curso primeiro");
+                return;
+            }
+
+            const updated = await prisma.studying.update({
+                where: { id: studying.id },
+                data: { xp: { increment: amount } }
+            });
+
+            res.status(200).json(updated);
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
+    });
+    app.get("/userxp/:courseId", requireLogin(prisma), async(req: Request, res: Response)=>{
+        try{
+            const courseId = Number(req.params.courseId);
+            if(isNaN(courseId)){
+                res.status(400).json("ID inválido");
+                return;
+            }
+            const studying = await prisma.studying.findFirst({
+                where: {
+                    userId: req.session.user!.id,
+                    courseId: courseId
+                }
+            });
+            if(!studying){
+                res.status(403).json("Você precisa começar este curso primeiro");
+                return;
+            }
+            res.status(200).json({ xp: studying.xp });
+        }
+        catch(er){
+            console.log(er);
+            res.status(500).json(er);
+        }
+    });
 }
